@@ -9,7 +9,7 @@
 
 using TStringVec = std::vector<std::string>;
 
-TStringVec GetFolderContents(const char *dirPath, const char *ext)
+TStringVec GetFolderContents(const char *dirPath, const char *ext = nullptr)
 {
     TStringVec folderContents;
 
@@ -55,9 +55,6 @@ TStringVec GetFolderContents(const char *dirPath, const char *ext)
     }
     else
     {
-        std::string tmp = originalPath;
-        tmp += FindFileData.cFileName;
-
         while (FindNextFile(hFind, &FindFileData))
         {
             //Ignore directories beginning with dots
@@ -66,10 +63,7 @@ TStringVec GetFolderContents(const char *dirPath, const char *ext)
                 continue;
             }
 
-            tmp = dirPath;
-            tmp += "/";
-            tmp += FindFileData.cFileName;
-            folderContents.push_back(tmp);
+            folderContents.push_back(FindFileData.cFileName);
         }
 
         //Close off the handle.
@@ -87,14 +81,14 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    auto tests = GetFolderContents(argv[1], ".test");
+    std::string dataDir = argv[1]l
+    auto tests = GetFolderContents(dataDir);
 
     std::cout << "Running (" << tests.size() << ") tests..." << std::endl;
 
     for (auto test : tests)
     {
-        std::cout << "Running test: " << test;
-        std::cout << "[Success]" << std::endl;
+        std::cout << "Running test: " << test << " [Success]" << std::endl;
     }
 
     return 0;
