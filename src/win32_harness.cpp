@@ -7,9 +7,11 @@
 #include <vector>
 #include <string>
 
+#include "tokeniser.h"
+
 using TStringVec = std::vector<std::string>;
 
-TStringVec GetFolderContents(const char *dirPath, const char *ext = nullptr)
+TStringVec GetFolderContents(const std::string dirPath, const char *ext = nullptr)
 {
     TStringVec folderContents;
 
@@ -19,7 +21,7 @@ TStringVec GetFolderContents(const char *dirPath, const char *ext = nullptr)
     //First, ensure we have the proper full path to the place we're looking in.
     char originalPath[MAX_PATH];
     memset(originalPath, 0, sizeof(originalPath));
-    DWORD filePathLen = GetFullPathName(dirPath, sizeof(originalPath), originalPath, NULL);
+    DWORD filePathLen = GetFullPathName(dirPath.c_str(), sizeof(originalPath), originalPath, NULL);
 
     if (originalPath[filePathLen] != '/')
     {
@@ -81,7 +83,7 @@ int main(int argc, char **argv)
         return -1;
     }
 
-    std::string dataDir = argv[1]l
+    std::string dataDir = argv[1];
     auto tests = GetFolderContents(dataDir);
 
     std::cout << "Running (" << tests.size() << ") tests..." << std::endl;
