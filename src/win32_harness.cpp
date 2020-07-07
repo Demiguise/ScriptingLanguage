@@ -91,6 +91,19 @@ int main(int argc, char **argv)
     for (auto test : tests)
     {
         std::cout << "Running test: " << test << " [Success]" << std::endl;
+        std::ifstream file(dataDir + "/" + test);
+
+        Tokeniser tokeniser(file);
+        while(true)
+        {
+            auto tok = tokeniser.Next();
+            if (tok == Token::EndOfStream)
+            {
+                break;
+            }
+
+            std::cout << "Tokenised" << std::endl;
+        }
     }
 
     return 0;
