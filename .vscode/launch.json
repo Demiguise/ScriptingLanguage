@@ -10,10 +10,12 @@
           "request": "launch",
           "program": "${workspaceFolder}/bin/test_harness.exe",
           "cwd": "${workspaceFolder}/bin",
-          "args": [],
+          "args": [
+            "${workspaceFolder}/data"
+          ],
           "stopAtEntry": false,
           "environment": [],
-          "externalConsole": true
+          "externalConsole": false
       },
   ]
 }
