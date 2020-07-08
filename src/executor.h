@@ -14,6 +14,6 @@ public:
   Executor(std::string scriptPath);
   
   bool Execute();
-}
+};
 
 #endif //~__EXECUTOR_H__

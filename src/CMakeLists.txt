@@ -1,10 +1,12 @@
 set(SRCS
   executor.h
-  
+  executor.cpp
+
   tokeniser.h
   tokeniser.cpp
 
   stack.h
+  stack.cpp
 )
 
 set(Common_Defines
