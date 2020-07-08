@@ -36,8 +36,8 @@ enum class Token
 struct TokenInfo
 {
   int mLine;
-  int mCharBegin;
-  int mCharEnd;
+  int mColBegin;
+  int mColEnd;
   std::string_view mRaw;
 };
 
@@ -48,12 +48,13 @@ class Tokeniser
 {
 private:
   std::ifstream mStream;
-  int mCurLine = 0;
+  int mCurLine = 1;
+  int mCurColumn = 1;
 
 public:
   Tokeniser(std::string filePath);
 
-  std::pair<std::string, TTokenVec> Parse();
+  TTokenVec Parse(std::string& outStatement);
 };
 
 #endif //__TOKENISER_H__
