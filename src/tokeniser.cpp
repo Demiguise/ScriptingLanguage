@@ -13,16 +13,15 @@ Tokeniser::Tokeniser(std::string filePath)
   info.mColEnd = tokenEnd; \
   \
   outStatement += ch; \
-  tokens.push_back({type, info});\
+  outTokens.push_back({type, info});\
   \
   tokenBegin = tokenEnd; \
 }\
 
 #define MAP_SINGLE_TOKEN(char, tokenType) case char: ADD_TOKEN(tokenType); break;
 
-TTokenVec Tokeniser::Parse(std::string& outStatement)
+std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTokens)
 {
-  TTokenVec tokens;
   int tokenBegin = 1;
   int tokenEnd = 0;
 
@@ -34,6 +33,7 @@ TTokenVec Tokeniser::Parse(std::string& outStatement)
 
   //Ensure the statement we're about to write is cleared
   outStatement.clear();
+  outTokens.clear();
 
   bool bStringLiteral = false;
 
@@ -121,11 +121,12 @@ TTokenVec Tokeniser::Parse(std::string& outStatement)
         else
         {
           //Unhandled case?
+          return -1;
         }
         break;
       }
     }
   }
 
-  return tokens;
+  return {};
 }

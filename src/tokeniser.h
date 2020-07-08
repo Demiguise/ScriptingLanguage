@@ -6,6 +6,7 @@
 #include <string>
 #include <string_view>
 #include <vector>
+#include <optional>
 
 enum class Token
 {
@@ -54,7 +55,7 @@ private:
 public:
   Tokeniser(std::string filePath);
 
-  TTokenVec Parse(std::string& outStatement);
+  std::optional<int> Parse(std::string& outStatement, TTokenVec& outTokens);
 };
 
 #endif //__TOKENISER_H__
