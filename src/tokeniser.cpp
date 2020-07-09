@@ -5,21 +5,6 @@ Tokeniser::Tokeniser(std::string filePath)
 {
 }
 
-#define ADD_TOKEN(type) \
-{\
-  TokenInfo info; \
-  info.mLine = line; \
-  info.mColBegin = tokenBegin; \
-  info.mColEnd = tokenEnd; \
-  \
-  outStatement += ch; \
-  outTokens.push_back({type, info});\
-  \
-  tokenBegin = tokenEnd; \
-}\
-
-#define MAP_SINGLE_TOKEN(char, tokenType) case char: ADD_TOKEN(tokenType); break;
-
 std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTokens)
 {
   int tokenBegin = 1;
@@ -37,6 +22,20 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
 
   bool bStringLiteral = false;
 
+  auto addToken = [&](Token type)
+  {
+    TokenInfo info;
+    info.mLine = line;
+    info.mColBegin = tokenBegin;
+    info.mColEnd = tokenEnd;
+
+    outStatement += ch;
+    outTokens.push_back({type, info});
+
+    tokenBegin = tokenEnd;
+  };
+  #define MAP_SINGLE_TOKEN(char, tokenType) case char: addToken(tokenType); break;
+
   while (!bDone)
   {
     mStream.get(ch);
@@ -46,14 +45,14 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
       case '\"':
       {
         bStringLiteral = !bStringLiteral;
-        ADD_TOKEN(Token::Double_Quote);
+        addToken(Token::Double_Quote);
         break;
       }
 
       case '\'':
       {
         bStringLiteral = !bStringLiteral;
-        ADD_TOKEN(Token::Single_Quote);
+        addToken(Token::Single_Quote);
         break;
       }
 
@@ -81,7 +80,7 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
         }
         else
         {
-          ADD_TOKEN(Token::Literal);
+          addToken(Token::Literal);
         }
 
         break;
@@ -103,7 +102,7 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
       {
         //Statement ends;
         bDone = true;
-        ADD_TOKEN(Token::Statement_End);
+        addToken(Token::Statement_End);
         break;
       }
 
