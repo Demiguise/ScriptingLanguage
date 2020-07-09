@@ -54,6 +54,7 @@ private:
   int mCurColumn = 1;
 
   int SkipToNewLine();
+  std::optional<int> Parse_Internal(std::string& outStatement, TTokenVec& outTokens);
 
 public:
   Tokeniser(std::string filePath);

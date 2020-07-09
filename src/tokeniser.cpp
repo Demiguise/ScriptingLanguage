@@ -27,7 +27,7 @@ int Tokeniser::SkipToNewLine()
   return count;
 }
 
-std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTokens)
+std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVec& outTokens)
 {
   int tokenBegin = 1;
   int tokenEnd = 0;
@@ -139,6 +139,7 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
         break;
       }
 
+      case '\n':
       case '\r':
       {
         if (mStream.peek() == '\n')
@@ -177,6 +178,26 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
         break;
       }
     }
+  }
+
+  return {};
+}
+
+std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTokens)
+{
+  auto err = Parse_Internal(outStatement, outTokens);
+  if (err.has_value())
+  {
+    return err;
+  }
+
+  //Map token raw views to the statement.
+  auto iter = outStatement.c_str();
+  for (auto [type, token] : outTokens)
+  {
+    int tokenLen = token.mColEnd - token.mColBegin;
+    token.mRaw = std::string_view(iter, tokenLen);
+    iter += tokenLen;
   }
 
   return {};
