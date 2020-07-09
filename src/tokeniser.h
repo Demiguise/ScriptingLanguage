@@ -32,6 +32,7 @@ enum class Token
   Bracket_Close,// ]
 
   Statement_End,// ;
+  Comment,      // Special character marking a commentented line or section of text
 };
 
 struct TokenInfo
@@ -51,6 +52,8 @@ private:
   std::ifstream mStream;
   int mCurLine = 1;
   int mCurColumn = 1;
+
+  int SkipToNewLine();
 
 public:
   Tokeniser(std::string filePath);

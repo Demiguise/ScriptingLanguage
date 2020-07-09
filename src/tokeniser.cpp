@@ -5,6 +5,28 @@ Tokeniser::Tokeniser(std::string filePath)
 {
 }
 
+int Tokeniser::SkipToNewLine()
+{
+  int count = 0;
+  char ch;
+
+  do
+  {
+    mStream.get(ch);
+    count++;
+  }
+  while (ch != '\r');
+
+  if (mStream.peek() == '\n')
+  {
+    //Consume the trailing \n in CRLF files
+    mStream.get(ch);
+    count++;
+  }
+
+  return count;
+}
+
 std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTokens)
 {
   int tokenBegin = 1;
@@ -56,13 +78,32 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
         break;
       }
 
+      case '/':
+      {
+        if (bStringLiteral)
+        {
+          outStatement += ch;
+          tokenEnd++;
+        }
+        else if (mStream.peek() == '/')
+        {
+          //This is a comment
+          mStream.get(ch);
+          tokenEnd += SkipToNewLine();
+          addToken(Token::Comment);
+        }
+        else
+        {
+
+        }
+      }
+
       MAP_SINGLE_TOKEN(',', Token::Comma);
 
       MAP_SINGLE_TOKEN('=', Token::Equals);
       MAP_SINGLE_TOKEN('+', Token::Addition);
       MAP_SINGLE_TOKEN('-', Token::Subtraction);
       MAP_SINGLE_TOKEN('*', Token::Multiply);
-      MAP_SINGLE_TOKEN('/', Token::Divide);
 
       MAP_SINGLE_TOKEN('(', Token::Paren_Close);
       MAP_SINGLE_TOKEN(')', Token::Paren_Close);
@@ -113,7 +154,6 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
             (ch >= 'a' && ch <= 'z') ||
             (ch >= 'A' && ch <= 'Z'))
         {
-          //Lower case
           outStatement += ch;
           tokenEnd++;
         }
