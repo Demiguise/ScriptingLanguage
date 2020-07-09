@@ -61,7 +61,7 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
 
     tokenBegin = tokenEnd;
   };
-  #define MAP_SINGLE_TOKEN(char, tokenType) case char: addToken(tokenType); break;
+  #define MAP_SINGLE_TOKEN(char, tokenType) case char: tokenEnd++; addToken(tokenType); break;
 
   while (!bDone)
   {
@@ -134,6 +134,8 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
         else
         {
           addToken(Token::Literal);
+          tokenBegin++;
+          tokenEnd++;
         }
 
         break;
