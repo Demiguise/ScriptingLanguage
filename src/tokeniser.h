@@ -44,7 +44,6 @@ struct IndexPair
 struct TokenInfo
 {
   int mLine;
-  int mCol; //Maps to the location of the beginning of token in the file
   IndexPair mStr; //Maps to the location of the token in the string
   std::string_view mRaw;
 };
@@ -63,7 +62,6 @@ private:
 
   std::ifstream mStream;
   int mCurLine = 1;
-  int mCurColumn = 1;
 
   int SkipToNewLine();
   std::optional<int> Parse_Internal(std::string& outStatement, TTokenVec& outTokens);

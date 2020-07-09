@@ -31,7 +31,6 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
 {
   char ch;
   int line = mCurLine;
-  int col = mCurColumn;
   bool bDone = false;
   State state = State::Normal;
 
@@ -51,7 +50,6 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
     TokenInfo info;
     info.mLine = line;
     info.mStr = strIdx;
-    info.mCol = col;
 
     outStatement += ch;
     outTokens.push_back({type, info});
@@ -155,7 +153,6 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
         }
 
         line++;
-        mCurColumn = 0;
       }
 
       case ';':
