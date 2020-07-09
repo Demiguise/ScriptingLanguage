@@ -7,7 +7,7 @@
 #include <vector>
 #include <string>
 
-#include "tokeniser.h"
+#include "executor.h"
 
 using TStringVec = std::vector<std::string>;
 
@@ -91,19 +91,9 @@ int main(int argc, char **argv)
     for (auto test : tests)
     {
         std::cout << "Running test: " << test << " [Success]" << std::endl;
-        std::ifstream file(dataDir + "/" + test);
+        Executor script(dataDir + "/" + test);
 
-        Tokeniser tokeniser(file);
-        while(true)
-        {
-            auto tok = tokeniser.Next();
-            if (tok == Token::EndOfStream)
-            {
-                break;
-            }
-
-            std::cout << "Tokenised" << std::endl;
-        }
+        script.Execute();
     }
 
     return 0;
