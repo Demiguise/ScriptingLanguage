@@ -200,8 +200,8 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
   //Map token raw views to the statement.
   for (auto& [type, token] : outTokens)
   {
-    int tokenLen = token.mStr.begin - token.mStr.end;
-    token.mRaw = std::string_view(outStatement.c_str() + (token.mStr.begin - 1), tokenLen);
+    int tokenLen = token.mStr.end - token.mStr.begin;
+    token.mRaw = std::string_view(outStatement.c_str() + token.mStr.begin, tokenLen);
   }
 
   return {};
