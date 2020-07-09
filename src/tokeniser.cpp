@@ -42,6 +42,11 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
   outStatement.clear();
   outTokens.clear();
 
+  if (mStream.eof())
+  {
+    return -1;
+  }
+
   bool bStringLiteral = false;
 
   auto addToken = [&](Token type)
@@ -61,6 +66,12 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
   while (!bDone)
   {
     mStream.get(ch);
+
+    if (mStream.eof())
+    {
+      //We're completely done but there's no error here yet.
+      return {};
+    }
 
     switch (ch)
     {
