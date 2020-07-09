@@ -48,7 +48,6 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
     return -1;
   }
 
-
   auto addToken = [&](Token type)
   {
     TokenInfo info;
@@ -69,7 +68,8 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
 
     if (mStream.eof())
     {
-      //We're completely done but there's no error here yet.
+      //We're completely done but there's no error here yet. Add a literal as best guess?
+      addToken(Token::Literal);
       return {};
     }
 
