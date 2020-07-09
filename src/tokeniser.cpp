@@ -30,7 +30,7 @@ int Tokeniser::SkipToNewLine()
 std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVec& outTokens)
 {
   int tokenBegin = 1;
-  int tokenEnd = 0;
+  int tokenEnd = 1;
 
   int column = mCurColumn;
   int line = mCurLine;
@@ -192,12 +192,10 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
   }
 
   //Map token raw views to the statement.
-  auto iter = outStatement.c_str();
-  for (auto [type, token] : outTokens)
+  for (auto& [type, token] : outTokens)
   {
     int tokenLen = token.mColEnd - token.mColBegin;
-    token.mRaw = std::string_view(iter, tokenLen);
-    iter += tokenLen;
+    token.mRaw = std::string_view(outStatement.c_str() + (token.mColBegin - 1), tokenLen);
   }
 
   return {};
