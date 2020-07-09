@@ -143,7 +143,6 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
         break;
       }
 
-      case '\n':
       case '\r':
       {
         if (mStream.peek() == '\n')
@@ -152,7 +151,12 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
           mStream.get(ch);
         }
 
+        [[fallthrough]];
+      }
+      case '\n':
+      {
         line++;
+        break;
       }
 
       case ';':
