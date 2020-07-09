@@ -94,7 +94,8 @@ std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTok
         }
         else
         {
-
+          //This is a divide sign
+          addToken(Token::Divide);
         }
       }
 
