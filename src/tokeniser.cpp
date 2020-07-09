@@ -97,7 +97,6 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
           //This is a comment
           mStream.get(ch);
           strIdx.end += SkipToNewLine();
-          addToken(Token::Comment);
         }
         else
         {

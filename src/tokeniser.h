@@ -32,7 +32,6 @@ enum class Token
   Bracket_Close,// ]
 
   Statement_End,// ;
-  Comment,      // Special character marking a commentented line or section of text
 };
 
 struct IndexPair
