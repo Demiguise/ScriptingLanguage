@@ -131,7 +131,13 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
         }
         else
         {
+          /*
+            If we've hit whitespace, we want to just add whatever came before as a literal.
+            We have no idea if this is a valid literal just yet.
+          */
           addToken(Token::Literal);
+
+          //Now increment ourselves past the whitespace.
           strIdx.begin++;
           strIdx.end++;
         }
