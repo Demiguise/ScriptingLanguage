@@ -29,6 +29,7 @@ int Tokeniser::SkipToNewLine()
 
 std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVec& outTokens)
 {
+  State state = State::Normal;
   int tokenBegin = 1;
   int tokenEnd = 1;
 
@@ -47,7 +48,6 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
     return -1;
   }
 
-  bool bStringLiteral = false;
 
   auto addToken = [&](Token type)
   {
@@ -77,21 +77,21 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
     {
       case '\"':
       {
-        bStringLiteral = !bStringLiteral;
+        state = (state == State::Normal) ? State::StringLiteral : State::Normal;
         addToken(Token::Double_Quote);
         break;
       }
 
       case '\'':
       {
-        bStringLiteral = !bStringLiteral;
+        state = (state == State::Normal) ? State::StringLiteral : State::Normal;
         addToken(Token::Single_Quote);
         break;
       }
 
       case '/':
       {
-        if (bStringLiteral)
+        if (state == State::StringLiteral)
         {
           outStatement += ch;
           tokenEnd++;
@@ -126,7 +126,7 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
       
       case ' ':
       {
-        if (bStringLiteral)
+        if (state == State::StringLiteral)
         {
           //String literals can have spaces in them
           outStatement += ch;
