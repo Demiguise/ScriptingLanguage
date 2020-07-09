@@ -15,7 +15,7 @@ int Tokeniser::SkipToNewLine()
     mStream.get(ch);
     count++;
   }
-  while (ch != '\r');
+  while (ch != '\r' && ch != '\n');
 
   if (mStream.peek() == '\n')
   {
