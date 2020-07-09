@@ -35,11 +35,17 @@ enum class Token
   Comment,      // Special character marking a commentented line or section of text
 };
 
+struct IndexPair
+{
+  int begin = 0;
+  int end = 0;
+};
+
 struct TokenInfo
 {
   int mLine;
-  int mColBegin;
-  int mColEnd;
+  int mCol; //Maps to the location of the beginning of token in the file
+  IndexPair mStr; //Maps to the location of the token in the string
   std::string_view mRaw;
 };
 
