@@ -198,58 +198,24 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
     return 0;
   };
 
-  handlers[','] = [&]() -> int {
-    addToken(Token::Comma);
-    return 0;
-  };
+  #define ADD_OPERATOR_HANDLER(char, singleType) \
+    handlers[char] = [&]() -> int { \
+      strIdx.end++; \
+      addToken(singleType); \
+      return 0; \
+    }
 
-  handlers['='] = [&]() -> int {
-    addToken(Token::Equals);
-    return 0;
-  };
-
-  handlers['+'] = [&]() -> int {
-    addToken(Token::Addition);
-    return 0;
-  };
-
-  handlers['-'] = [&]() -> int {
-    addToken(Token::Subtraction);
-    return 0;
-  };
-  handlers['*'] = [&]() -> int {
-    addToken(Token::Multiply);
-    return 0;
-  };
-
-  handlers['('] = [&]() -> int {
-    addToken(Token::Paren_Open);
-    return 0;
-  };
-
-  handlers[')'] = [&]() -> int {
-    addToken(Token::Paren_Close);
-    return 0;
-  };
-  handlers['{'] = [&]() -> int {
-    addToken(Token::Curly_Open);
-    return 0;
-  };
-
-  handlers['}'] = [&]() -> int {
-    addToken(Token::Curly_Close);
-    return 0;
-  };
-
-  handlers['['] = [&]() -> int {
-    addToken(Token::Bracket_Open);
-    return 0;
-  };
-
-  handlers[']'] = [&]() -> int {
-    addToken(Token::Bracket_Close);
-    return 0;
-  };
+  ADD_OPERATOR_HANDLER(',', Token::Comma);
+  ADD_OPERATOR_HANDLER('=', Token::Equals);
+  ADD_OPERATOR_HANDLER('+', Token::Addition);
+  ADD_OPERATOR_HANDLER('-', Token::Subtraction);
+  ADD_OPERATOR_HANDLER('+', Token::Addition);
+  ADD_OPERATOR_HANDLER('(', Token::Paren_Open);
+  ADD_OPERATOR_HANDLER(')', Token::Paren_Close);
+  ADD_OPERATOR_HANDLER('{', Token::Curly_Open);
+  ADD_OPERATOR_HANDLER('}', Token::Curly_Close);
+  ADD_OPERATOR_HANDLER('[', Token::Bracket_Open);
+  ADD_OPERATOR_HANDLER(']', Token::Bracket_Close);
 
   //Lower case letters
   handlers['a'] = textHandler;
