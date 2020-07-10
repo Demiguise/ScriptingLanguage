@@ -13,6 +13,34 @@ enum class State
   StringLiteral
 };
 
+#define OUTPUT_TYPE(type) case type: return #type
+std::string TypeToString(Token type)
+{
+  switch (type)
+  {
+    OUTPUT_TYPE(Token::Null);
+    OUTPUT_TYPE(Token::EndOfStream);
+    OUTPUT_TYPE(Token::Literal);
+    OUTPUT_TYPE(Token::Double_Quote);
+    OUTPUT_TYPE(Token::Single_Quote);
+    OUTPUT_TYPE(Token::Comma);
+    OUTPUT_TYPE(Token::Equals);
+    OUTPUT_TYPE(Token::Addition);
+    OUTPUT_TYPE(Token::Subtraction);
+    OUTPUT_TYPE(Token::Multiply);
+    OUTPUT_TYPE(Token::Divide);
+    OUTPUT_TYPE(Token::Paren_Open);
+    OUTPUT_TYPE(Token::Paren_Close);
+    OUTPUT_TYPE(Token::Curly_Open);
+    OUTPUT_TYPE(Token::Curly_Close);
+    OUTPUT_TYPE(Token::Bracket_Open);
+    OUTPUT_TYPE(Token::Bracket_Close);
+    OUTPUT_TYPE(Token::Statement_End);
+    default: return "Unknown";
+  };
+}
+#undef OUTPUT_TYPE
+
 Tokeniser::Tokeniser(std::string filePath)
   : mStream(filePath)
 {
@@ -66,7 +94,9 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
 
     outStatement += ch;
 
-    std::cout << "Adding token [" << strIdx.begin << ":" << strIdx.end << "] " << outStatement.substr(strIdx.begin, strIdx.end - strIdx.begin) << std::endl;
+    std::cout << "Adding " << TypeToString(type) << " [" << 
+              strIdx.begin << ":" << strIdx.end << "] " << 
+              outStatement.substr(strIdx.begin, strIdx.end - strIdx.begin) << std::endl;
     outTokens.push_back({type, info});
 
     strIdx.begin = strIdx.end;

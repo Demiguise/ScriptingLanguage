@@ -34,6 +34,8 @@ enum class Token
   Statement_End,// ;
 };
 
+std::string TypeToString(Token type);
+
 struct IndexPair
 {
   int begin = 0;
