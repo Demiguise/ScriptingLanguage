@@ -1,5 +1,9 @@
 #include "tokeniser.h"
 
+#include <array>
+#include <functional>
+#include <limits.h>
+
 Tokeniser::Tokeniser(std::string filePath)
   : mStream(filePath)
 {
@@ -57,6 +61,29 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
     strIdx.begin = strIdx.end;
   };
   #define MAP_SINGLE_TOKEN(char, tokenType) case char: strIdx.end++; addToken(tokenType); break;
+
+  using TCharHandler = std::function<int()>;
+  auto defaultHandler = []() -> int{
+    return -1;
+  };
+
+  auto textHandler = [&]() ->int {
+    outStatement += ch;
+    strIdx.end++;
+    return 0;
+  };
+
+  //Create a handler for each possible ASCII character
+  std::array<TCharHandler, UCHAR_MAX> handlers;
+  handlers.fill(defaultHandler);
+
+  handlers['\"'] = [&]() -> int {
+    state = (state == State::Normal) ? State::StringLiteral : State::Normal;
+    addToken(Token::Double_Quote);
+    return 0;
+  };
+
+  handlers['\"']();
 
   while (!bDone)
   {
