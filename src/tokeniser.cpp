@@ -77,13 +77,207 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
   std::array<TCharHandler, UCHAR_MAX> handlers;
   handlers.fill(defaultHandler);
 
+  //Opening/Closing string literals
   handlers['\"'] = [&]() -> int {
     state = (state == State::Normal) ? State::StringLiteral : State::Normal;
     addToken(Token::Double_Quote);
     return 0;
   };
 
-  handlers['\"']();
+  handlers['\''] = [&]() -> int {
+    state = (state == State::Normal) ? State::StringLiteral : State::Normal;
+    addToken(Token::Single_Quote);
+    return 0;
+  };
+
+  //Comments
+  handlers['/'] = [&]() -> int {
+    if (state == State::StringLiteral)
+    {
+      outStatement += ch;
+      strIdx.end++;
+    }
+    else if (mStream.peek() == '/')
+    {
+      //This is a comment
+      mStream.get(ch);
+      strIdx.end += SkipToNewLine();
+    }
+    else
+    {
+      //This is a divide sign
+      addToken(Token::Divide);
+    }
+    return 0;
+  };
+
+  //New lines
+  handlers['\r'] = [&]() -> int {
+    if (mStream.peek() == '\n')
+    {
+      //Consume the trailing \n in CRLF files
+      mStream.get(ch);
+    }
+
+    line++;
+    return 0;
+  };
+
+  handlers['\n'] = [&]() -> int {
+    line++;
+    return 0;
+  };
+
+  //Whitespace
+  handlers[' '] = [&]() -> int {
+    if (state == State::StringLiteral)
+    {
+      //String literals can have spaces in them
+      outStatement += ch;
+    }
+    else
+    {
+      /*
+        If we've hit whitespace, we want to just add whatever came before as a literal.
+        We have no idea if this is a valid literal just yet.
+      */
+      addToken(Token::Literal);
+
+      //Now increment ourselves past the whitespace.
+      strIdx.begin++;
+      strIdx.end++;
+    }
+
+    return 0;
+  };
+
+  //Operators
+  handlers[';'] = [&]() -> int {
+    bDone = true;
+    addToken(Token::Statement_End);
+    return 0;
+  };
+
+  handlers[','] = [&]() -> int {
+    addToken(Token::Comma);
+    return 0;
+  };
+
+  handlers['='] = [&]() -> int {
+    addToken(Token::Equals);
+    return 0;
+  };
+
+  handlers['+'] = [&]() -> int {
+    addToken(Token::Addition);
+    return 0;
+  };
+
+  handlers['-'] = [&]() -> int {
+    addToken(Token::Subtraction);
+    return 0;
+  };
+  handlers['*'] = [&]() -> int {
+    addToken(Token::Multiply);
+    return 0;
+  };
+
+  handlers['('] = [&]() -> int {
+    addToken(Token::Paren_Open);
+    return 0;
+  };
+
+  handlers[')'] = [&]() -> int {
+    addToken(Token::Paren_Close);
+    return 0;
+  };
+  handlers['{'] = [&]() -> int {
+    addToken(Token::Curly_Open);
+    return 0;
+  };
+
+  handlers['}'] = [&]() -> int {
+    addToken(Token::Curly_Close);
+    return 0;
+  };
+
+  handlers['['] = [&]() -> int {
+    addToken(Token::Bracket_Open);
+    return 0;
+  };
+
+  handlers[']'] = [&]() -> int {
+    addToken(Token::Bracket_Close);
+    return 0;
+  };
+
+  //Lower case letters
+  handlers['a'] = textHandler;
+  handlers['b'] = textHandler;
+  handlers['c'] = textHandler;
+  handlers['d'] = textHandler;
+  handlers['e'] = textHandler;
+  handlers['f'] = textHandler;
+  handlers['g'] = textHandler;
+  handlers['h'] = textHandler;
+  handlers['i'] = textHandler;
+  handlers['j'] = textHandler;
+  handlers['k'] = textHandler;
+  handlers['l'] = textHandler;
+  handlers['m'] = textHandler;
+  handlers['n'] = textHandler;
+  handlers['o'] = textHandler;
+  handlers['p'] = textHandler;
+  handlers['q'] = textHandler;
+  handlers['r'] = textHandler;
+  handlers['s'] = textHandler;
+  handlers['t'] = textHandler;
+  handlers['u'] = textHandler;
+  handlers['v'] = textHandler;
+  handlers['w'] = textHandler;
+  handlers['x'] = textHandler;
+  handlers['y'] = textHandler;
+  handlers['z'] = textHandler;
+
+  //Upper case letters
+  handlers['A'] = textHandler;
+  handlers['B'] = textHandler;
+  handlers['C'] = textHandler;
+  handlers['D'] = textHandler;
+  handlers['E'] = textHandler;
+  handlers['F'] = textHandler;
+  handlers['G'] = textHandler;
+  handlers['H'] = textHandler;
+  handlers['I'] = textHandler;
+  handlers['J'] = textHandler;
+  handlers['K'] = textHandler;
+  handlers['L'] = textHandler;
+  handlers['M'] = textHandler;
+  handlers['N'] = textHandler;
+  handlers['O'] = textHandler;
+  handlers['P'] = textHandler;
+  handlers['Q'] = textHandler;
+  handlers['R'] = textHandler;
+  handlers['S'] = textHandler;
+  handlers['T'] = textHandler;
+  handlers['U'] = textHandler;
+  handlers['V'] = textHandler;
+  handlers['W'] = textHandler;
+  handlers['X'] = textHandler;
+  handlers['Y'] = textHandler;
+  handlers['Z'] = textHandler;
+
+  //Numbers
+  handlers['0'] = textHandler;
+  handlers['1'] = textHandler;
+  handlers['2'] = textHandler;
+  handlers['3'] = textHandler;
+  handlers['4'] = textHandler;
+  handlers['5'] = textHandler;
+  handlers['6'] = textHandler;
+  handlers['7'] = textHandler;
+  handlers['8'] = textHandler;
+  handlers['9'] = textHandler;
 
   while (!bDone)
   {
@@ -96,120 +290,9 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
       return {};
     }
 
-    switch (ch)
+    if (handlers[ch]() < 0)
     {
-      case '\"':
-      {
-        state = (state == State::Normal) ? State::StringLiteral : State::Normal;
-        addToken(Token::Double_Quote);
-        break;
-      }
-
-      case '\'':
-      {
-        state = (state == State::Normal) ? State::StringLiteral : State::Normal;
-        addToken(Token::Single_Quote);
-        break;
-      }
-
-      case '/':
-      {
-        if (state == State::StringLiteral)
-        {
-          outStatement += ch;
-          strIdx.end++;
-        }
-        else if (mStream.peek() == '/')
-        {
-          //This is a comment
-          mStream.get(ch);
-          strIdx.end += SkipToNewLine();
-        }
-        else
-        {
-          //This is a divide sign
-          addToken(Token::Divide);
-        }
-      }
-
-      MAP_SINGLE_TOKEN(',', Token::Comma);
-
-      MAP_SINGLE_TOKEN('=', Token::Equals);
-      MAP_SINGLE_TOKEN('+', Token::Addition);
-      MAP_SINGLE_TOKEN('-', Token::Subtraction);
-      MAP_SINGLE_TOKEN('*', Token::Multiply);
-
-      MAP_SINGLE_TOKEN('(', Token::Paren_Close);
-      MAP_SINGLE_TOKEN(')', Token::Paren_Close);
-      MAP_SINGLE_TOKEN('{', Token::Curly_Open);
-      MAP_SINGLE_TOKEN('}', Token::Curly_Close);
-      MAP_SINGLE_TOKEN('[', Token::Bracket_Open);
-      MAP_SINGLE_TOKEN(']', Token::Bracket_Close);
-      
-      case ' ':
-      {
-        if (state == State::StringLiteral)
-        {
-          //String literals can have spaces in them
-          outStatement += ch;
-        }
-        else
-        {
-          /*
-            If we've hit whitespace, we want to just add whatever came before as a literal.
-            We have no idea if this is a valid literal just yet.
-          */
-          addToken(Token::Literal);
-
-          //Now increment ourselves past the whitespace.
-          strIdx.begin++;
-          strIdx.end++;
-        }
-
-        break;
-      }
-
-      case '\r':
-      {
-        if (mStream.peek() == '\n')
-        {
-          //Consume the trailing \n in CRLF files
-          mStream.get(ch);
-        }
-
-        [[fallthrough]];
-      }
-      case '\n':
-      {
-        line++;
-        break;
-      }
-
-      case ';':
-      {
-        //Statement ends;
-        bDone = true;
-        addToken(Token::Statement_End);
-        break;
-      }
-
-      //Any other ASCII character
-      default:
-      {
-        if ((ch >= '0' && ch <= '9') ||
-            (ch >= 'a' && ch <= 'z') ||
-            (ch >= 'A' && ch <= 'Z'))
-        {
-          outStatement += ch;
-          strIdx.end++;
-        }
-        else
-        {
-          //Unhandled case?
-          return -1;
-        }
-        break;
-      }
+      return -1;
     }
   }
 
