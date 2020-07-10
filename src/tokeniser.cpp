@@ -4,6 +4,9 @@
 #include <functional>
 #include <limits.h>
 
+#include <stdio.h>
+#include <iostream>
+
 enum class State
 {
   Normal,
@@ -62,6 +65,8 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
     info.mStr = strIdx;
 
     outStatement += ch;
+
+    std::cout << "Adding token [" << strIdx.begin << ":" << strIdx.end << "] " << outStatement.substr(strIdx.begin, strIdx.end - strIdx.begin) << std::endl;
     outTokens.push_back({type, info});
 
     strIdx.begin = strIdx.end;
