@@ -53,12 +53,6 @@ using TTokenVec = std::vector<TTokenPair>;
 class Tokeniser
 {
 private:
-  enum class State
-  {
-    Normal,
-    StringLiteral
-  };
-
   std::ifstream mStream;
   int mCurLine = 1;
 

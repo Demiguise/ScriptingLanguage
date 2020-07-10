@@ -4,6 +4,12 @@
 #include <functional>
 #include <limits.h>
 
+enum class State
+{
+  Normal,
+  StringLiteral
+};
+
 Tokeniser::Tokeniser(std::string filePath)
   : mStream(filePath)
 {
@@ -60,7 +66,6 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
 
     strIdx.begin = strIdx.end;
   };
-  #define MAP_SINGLE_TOKEN(char, tokenType) case char: strIdx.end++; addToken(tokenType); break;
 
   using TCharHandler = std::function<int()>;
   auto defaultHandler = []() -> int{
