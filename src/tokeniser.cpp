@@ -93,8 +93,6 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
     info.mLine = line;
     info.mStr = strIdx;
 
-    outStatement += ch;
-
     std::cout << "Adding " << TypeToString(type) << " [" << 
               strIdx.begin << ":" << strIdx.end << "] " << 
               outStatement.substr(strIdx.begin, strIdx.end - strIdx.begin) << std::endl;
@@ -126,12 +124,14 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
   //Opening/Closing string literals
   handlers['\"'] = [&]() -> int {
     state = (state == State::Normal) ? State::StringLiteral : State::Normal;
+    outStatement += ch;
     addToken(Token::Double_Quote);
     return 0;
   };
 
   handlers['\''] = [&]() -> int {
     state = (state == State::Normal) ? State::StringLiteral : State::Normal;
+    outStatement += ch;
     addToken(Token::Single_Quote);
     return 0;
   };
@@ -152,6 +152,7 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
     else
     {
       //This is a divide sign
+      outStatement += ch;
       addToken(Token::Divide);
     }
     return 0;
@@ -188,6 +189,7 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
         If we've hit whitespace, we want to just add whatever came before as a literal.
         We have no idea if this is a valid literal just yet.
       */
+      outStatement += ch;
       addToken(Token::Literal);
 
       //Now increment ourselves past the whitespace.
@@ -210,6 +212,12 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
   //Operators
   handlers[';'] = [&]() -> int {
     bDone = true;
+    if (state == State::Literal)
+    {
+      addToken(Token::Literal);
+    }
+
+    outStatement += ch;
     addToken(Token::Statement_End);
     return 0;
   };
@@ -217,6 +225,7 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
   #define ADD_OPERATOR_HANDLER(char, singleType) \
     handlers[char] = [&]() -> int { \
       strIdx.end++; \
+      outStatement += ch; \
       addToken(singleType); \
       return 0; \
     }
