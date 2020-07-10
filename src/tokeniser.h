@@ -12,6 +12,7 @@ enum class Token
 {
   Null,
   EndOfStream,
+  Comment,
 
   Literal,      // Any string of characters A-Za-z0-9
   Double_Quote, // " Character
@@ -58,7 +59,6 @@ private:
   std::ifstream mStream;
   int mCurLine = 1;
 
-  int SkipToNewLine();
   std::optional<int> Parse_Internal(std::string& outStatement, TTokenVec& outTokens);
 
 public:

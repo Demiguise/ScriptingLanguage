@@ -21,6 +21,7 @@ std::string TypeToString(Token type)
   {
     OUTPUT_TYPE(Token::Null);
     OUTPUT_TYPE(Token::EndOfStream);
+    OUTPUT_TYPE(Token::Comment);
     OUTPUT_TYPE(Token::Literal);
     OUTPUT_TYPE(Token::Double_Quote);
     OUTPUT_TYPE(Token::Single_Quote);
@@ -45,28 +46,6 @@ std::string TypeToString(Token type)
 Tokeniser::Tokeniser(std::string filePath)
   : mStream(filePath)
 {
-}
-
-int Tokeniser::SkipToNewLine()
-{
-  int count = 0;
-  char ch;
-
-  do
-  {
-    mStream.get(ch);
-    count++;
-  }
-  while (ch != '\r' && ch != '\n');
-
-  if (mStream.peek() == '\n')
-  {
-    //Consume the trailing \n in CRLF files
-    mStream.get(ch);
-    count++;
-  }
-
-  return count;
 }
 
 std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVec& outTokens)
@@ -146,8 +125,24 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
     else if (mStream.peek() == '/')
     {
       //This is a comment
-      mStream.get(ch);
-      strIdx.end += SkipToNewLine();
+      std::cout << "Encountered a comment, skipping to newline" << std::endl;
+
+      do
+      {
+        outStatement += ch;
+        strIdx.end++;
+        mStream.get(ch);
+      } while (ch != '\r' && ch != '\n');
+
+      if (mStream.peek() == '\n')
+      {
+        //Consume the trailing \n in CRLF files
+        mStream.get(ch);
+        strIdx.end++;
+      }
+
+      addToken(Token::Comment);
+      bDone = true;
     }
     else
     {
