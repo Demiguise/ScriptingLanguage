@@ -10,6 +10,7 @@
 enum class State
 {
   Normal,
+  Literal,
   StringLiteral
 };
 
@@ -108,6 +109,11 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
   };
 
   auto textHandler = [&]() ->int {
+    if (state == State::Normal)
+    {
+      state = State::Literal;
+    }
+
     outStatement += ch;
     strIdx.end++;
     return 0;
@@ -174,8 +180,9 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
     {
       //String literals can have spaces in them
       outStatement += ch;
+      strIdx.end++;
     }
-    else
+    else if (state == State::Literal)
     {
       /*
         If we've hit whitespace, we want to just add whatever came before as a literal.
@@ -184,6 +191,15 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
       addToken(Token::Literal);
 
       //Now increment ourselves past the whitespace.
+      strIdx.begin++;
+      strIdx.end++;
+      state = State::Normal;
+    }
+    else
+    {
+      //Ignore it
+      std::cout << "Skipping whitespace" << std::endl;
+      outStatement += ch;
       strIdx.begin++;
       strIdx.end++;
     }
