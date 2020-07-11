@@ -4,6 +4,7 @@
 #include "types.h"
 #include <stack>
 #include <vector>
+#include <optional>
 
 using TVarVec = std::vector<Variable>;
 
@@ -24,6 +25,8 @@ public:
   Stack();
 
   void CreateVariable(Type type, std::string_view name);
+
+  bool GetVariable(std::string_view name, Variable& outVar);
 
   void EnterFrame();
   void ExitFrame();

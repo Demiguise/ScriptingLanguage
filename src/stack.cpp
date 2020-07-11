@@ -2,6 +2,7 @@
 
 #include <iostream>
 #include <stdio.h>
+#include <algorithm>
 
 Stack::Stack()
 {}
@@ -30,6 +31,30 @@ void Stack::CreateVariable(Type type, std::string_view name)
   if (CheckForShadows(name))
   {
     std::cout << "An existing variable named [" << name << " already exists." << std::endl;
+  }
+}
+
+bool Stack::GetVariable(std::string_view name, Variable& outVar)
+{
+  if (mFrames.size() == 0)
+  {
+    //Error
+    std::cout << "No stack frames in use" << std::endl;
+    return false;
+  }
+
+  Frame& topFrame = mFrames.top();
+  auto varIter = std::find_if(topFrame.mVariables.begin(), topFrame.mVariables.end(), 
+                [&](Variable& ele) { return ele.Name() == name; } );
+
+  if (varIter == topFrame.mVariables.end())
+  {
+    return false;
+  }
+  else
+  {
+    outVar = *varIter;
+    return true;
   }
 }
 

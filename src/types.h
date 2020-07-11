@@ -53,6 +53,8 @@ public:
   //You must ALWAYS supply base type for a variable
   Variable(Type type, std::string_view name);
   ~Variable() = default;
+
+  std::string Name() { return mName; }
 };
 
 #endif //~__TYPES_H__
