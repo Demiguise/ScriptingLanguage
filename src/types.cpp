@@ -14,7 +14,8 @@ std::string BaseTypeToString(BaseType type)
 }
 #undef OUTPUT_TYPE
 
-Variable::Variable(Type type)
+Variable::Variable(Type type, std::string_view name)
   : mType(type)
+  , mName(name)
 {
 }

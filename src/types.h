@@ -35,6 +35,7 @@ class Variable
 {
 private:
   Type mType;
+  std::string mName;
 
   struct
   {
@@ -50,7 +51,7 @@ private:
 
 public:
   //You must ALWAYS supply base type for a variable
-  Variable(Type type);
+  Variable(Type type, std::string_view name);
   ~Variable() = default;
 };
 

@@ -3,10 +3,13 @@
 
 #include "types.h"
 #include <stack>
+#include <vector>
 
-class Frame
+using TVarVec = std::vector<Variable>;
+
+struct Frame
 {
-
+  TVarVec mVariables;
 };
 
 class Stack
