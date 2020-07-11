@@ -51,7 +51,7 @@ struct TokenInfo
 };
 
 using TTokenPair = std::pair<Token, TokenInfo>;
-using TTokenVec = std::vector<TTokenPair>;
+using TTokenGroup = std::vector<TTokenPair>;
 
 class Tokeniser
 {

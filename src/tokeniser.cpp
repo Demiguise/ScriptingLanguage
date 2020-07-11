@@ -48,7 +48,7 @@ Tokeniser::Tokeniser(std::string filePath)
 {
 }
 
-std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVec& outTokens)
+std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenGroup& outTokens)
 {
   char ch;
   int line = mCurLine;
@@ -325,7 +325,7 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenVe
   return {};
 }
 
-std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenVec& outTokens)
+std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenGroup& outTokens)
 {
   auto err = Parse_Internal(outStatement, outTokens);
   if (err.has_value())
