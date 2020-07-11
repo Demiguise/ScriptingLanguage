@@ -24,6 +24,9 @@ bool Executor::Execute()
 {
   std::string raw_statement = "";
   TTokenVec tokens;
+
+  mStack.EnterFrame();
+
   while (!mTokeniser.Parse(raw_statement, tokens).has_value())
   {
     std::cout << "RAW: " << raw_statement << std::endl;
@@ -51,7 +54,7 @@ bool Executor::Execute()
         if (tokens[1].first == Token::Literal)
         {
           //This MUST be an identifer
-          mStack.Create(*type, tokens[1].second.mRaw);
+          mStack.CreateVariable(*type, tokens[1].second.mRaw);
         }
       }
       else
