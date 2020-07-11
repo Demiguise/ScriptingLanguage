@@ -20,6 +20,32 @@ TTypeVec sTypes = {
   { BaseType::Float,  "float" },
 };
 
+bool Executor::IsAType(std::string_view arg, Type& outType)
+{
+  auto type = std::find_if(sTypes.begin(), sTypes.end(), 
+    [&](Type& element) { return element.Name() == arg; });
+
+  if (type == sTypes.end())
+  {
+    return false;
+  }
+  else
+  {
+    outType = *type;
+    return true;
+  }
+}
+
+bool Executor::IsAKeyword(std::string_view arg)
+{
+  return false;
+}
+
+bool Executor::IsABuiltin(std::string_view arg)
+{
+  return false;
+}
+
 bool Executor::Execute()
 {
   std::string raw_statement = "";
@@ -47,17 +73,16 @@ bool Executor::Execute()
     if (tokens[0].first == Token::Literal)
     {
       auto name = tokens[0].second.mRaw;
-      auto type = std::find_if(sTypes.begin(), sTypes.end(), 
-        [&](Type& element) { return element.Name() == name; });
 
       Variable var;
-      if (type != sTypes.end())
+      Type type = sNullType;
+      if (IsAType(name, type))
       {
         //We have a valid type
         if (tokens[1].first == Token::Literal)
         {
           //This MUST be an identifer
-          mStack.CreateVariable(*type, tokens[1].second.mRaw);
+          mStack.CreateVariable(type, tokens[1].second.mRaw);
         }
       }
       else if (mStack.GetVariable(name, var))
@@ -77,3 +102,19 @@ bool Executor::Execute()
 
   return true;
 }
+
+/*
+  Let's try and draw out the possible states we have
+
+  [0]                         [1]                         [2]
+  Literal   -> IsAType    ->  Literal -> IsAnIdenfier ->  (Optional) Operator
+                                      -> Failure
+
+            -> IsAKeyword ->  <Dependant on Keyword>
+
+            -> IsABuiltin ->  Paren_Open -> 
+                          ->  Failure
+            -> Failure
+  
+  Operator  -> Failure
+*/

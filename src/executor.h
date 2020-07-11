@@ -10,6 +10,10 @@ private:
   Tokeniser mTokeniser;
   Stack mStack;
 
+  bool IsAType(std::string_view arg, Type& outType);
+  bool IsAKeyword(std::string_view arg);
+  bool IsABuiltin(std::string_view arg);
+
 public:
   Executor(std::string scriptPath);
   
