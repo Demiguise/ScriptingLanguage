@@ -1,2 +1,4 @@
 int a = 0;
+a = 5;
+a = a + 6;
 int b = 0; //This has a comment
