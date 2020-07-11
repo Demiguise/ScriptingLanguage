@@ -6,6 +6,13 @@
 Stack::Stack()
 {}
 
+//False on no shadows existing
+//Shadows being other variables named the same thing.
+bool Stack::CheckForShadows(std::string_view name)
+{
+  return false;
+}
+
 void Stack::CreateVariable(Type type, std::string_view name)
 {
   if (mFrames.size() == 0)
@@ -19,6 +26,11 @@ void Stack::CreateVariable(Type type, std::string_view name)
   Frame& topFrame = mFrames.top();
   Variable newVar(type, name);
   topFrame.mVariables.push_back(newVar);
+
+  if (CheckForShadows(name))
+  {
+    std::cout << "An existing variable named [" << name << " already exists." << std::endl;
+  }
 }
 
 void Stack::EnterFrame()

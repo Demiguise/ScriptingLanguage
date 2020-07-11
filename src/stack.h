@@ -18,6 +18,8 @@ private:
   using TStackFrame = std::stack<Frame>;
   TStackFrame mFrames;
 
+  bool CheckForShadows(std::string_view name);
+
 public:
   Stack();
 
