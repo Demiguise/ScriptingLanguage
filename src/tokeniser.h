@@ -5,7 +5,7 @@
 #include <fstream>
 #include <string>
 #include <string_view>
-#include <vector>
+#include <list>
 #include <optional>
 
 enum class Token
@@ -51,7 +51,7 @@ struct TokenInfo
 };
 
 using TTokenPair = std::pair<Token, TokenInfo>;
-using TTokenGroup = std::vector<TTokenPair>;
+using TTokenGroup = std::list<TTokenPair>;
 
 class Tokeniser
 {
