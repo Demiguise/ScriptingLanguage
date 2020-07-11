@@ -18,4 +18,6 @@ Variable::Variable(Type type, std::string_view name)
   : mType(type)
   , mName(name)
 {
+  //Default set our data to 0.
+  mData.i = 0;
 }

@@ -46,8 +46,11 @@ bool Executor::Execute()
 
     if (tokens[0].first == Token::Literal)
     {
+      auto name = tokens[0].second.mRaw;
       auto type = std::find_if(sTypes.begin(), sTypes.end(), 
-        [&](Type& element) { return element.Name() == tokens[0].second.mRaw; });
+        [&](Type& element) { return element.Name() == name; });
+
+      Variable var;
       if (type != sTypes.end())
       {
         //We have a valid type
@@ -57,9 +60,9 @@ bool Executor::Execute()
           mStack.CreateVariable(*type, tokens[1].second.mRaw);
         }
       }
-      else
+      else if (mStack.GetVariable(name, var))
       {
-        //Check against built-in functions
+        //We've got a variable matching this.
       }
 
     }

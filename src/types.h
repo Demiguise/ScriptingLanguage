@@ -30,11 +30,12 @@ public:
   BaseType Base() { return mBase; }
   std::string Name() { return mName; }
 };
+static Type sNullType(BaseType::Null, "Null");
 
 class Variable
 {
 private:
-  Type mType;
+  Type mType = sNullType;
   std::string mName;
 
   struct
@@ -50,7 +51,7 @@ private:
   } mData;
 
 public:
-  //You must ALWAYS supply base type for a variable
+  Variable() = default;
   Variable(Type type, std::string_view name);
   ~Variable() = default;
 
