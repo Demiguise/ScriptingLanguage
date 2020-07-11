@@ -7,6 +7,9 @@ set(SRCS
 
   stack.h
   stack.cpp
+
+  types.h
+  types.cpp
 )
 
 set(Common_Defines

@@ -5,18 +5,11 @@
 
 #include <unordered_map>
 
+#include "types.h"
+
 Executor::Executor(std::string scriptPath)
   : mTokeniser(scriptPath)
 {}
-
-//Temporary while we are dealing with JUST POD types
-enum class Type
-{
-  Int,
-  Bool,
-  String,
-  Float,
-};
 
 using TKeywordMap = std::unordered_map<std::string_view, Type>;
 TKeywordMap sTypes = {
