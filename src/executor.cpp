@@ -3,7 +3,8 @@
 #include <stdio.h>
 #include <iostream>
 
-#include <unordered_map>
+#include <vector>
+#include <algorithm>
 
 #include "types.h"
 
@@ -11,12 +12,12 @@ Executor::Executor(std::string scriptPath)
   : mTokeniser(scriptPath)
 {}
 
-using TKeywordMap = std::unordered_map<std::string_view, Type>;
-TKeywordMap sTypes = {
-  {"int", Type::Int},
-  {"bool", Type::Bool},
-  {"string", Type::String},
-  {"float", Type::Float},
+using TTypeVec = std::vector<Type>;
+TTypeVec sTypes = {
+  { BaseType::Int,    "int" },
+  { BaseType::Bool,   "bool" },
+  { BaseType::String, "string" },
+  { BaseType::Float,  "float" },
 };
 
 bool Executor::Execute()
@@ -42,14 +43,15 @@ bool Executor::Execute()
 
     if (tokens[0].first == Token::Literal)
     {
-      auto type = sTypes.find(tokens[0].second.mRaw);
+      auto type = std::find_if(sTypes.begin(), sTypes.end(), 
+        [&](Type& element) { return element.Name() == tokens[0].second.mRaw; });
       if (type != sTypes.end())
       {
         //We have a valid type
         if (tokens[1].first == Token::Literal)
         {
           //This MUST be an identifer
-          mStack.Create(type->second, tokens[1].second.mRaw);
+          mStack.Create(*type, tokens[1].second.mRaw);
         }
       }
       else

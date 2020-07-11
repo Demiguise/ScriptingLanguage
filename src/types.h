@@ -15,21 +15,42 @@ enum class BaseType
 
 std::string BaseTypeToString(BaseType type);
 
+class Type
+{
+private:
+  BaseType mBase;
+  std::string mName;
+
+public:
+  Type(BaseType base, std::string typeName)
+    : mBase(base)
+    , mName(typeName)
+  {}
+
+  BaseType Base() { return mBase; }
+  std::string Name() { return mName; }
+};
+
 class Variable
 {
 private:
-  BaseType mBase = BaseType::Null; //Refers to how the data is stored in the union
+  Type mType;
 
-  union
+  struct
   {
-    int i;
-    bool b;
-    float f;
+    union
+    {
+      int i;
+      bool b;
+      float f;
+    };
+
     std::string str;
   } mData;
 
 public:
-  Variable() = default;
+  //You must ALWAYS supply base type for a variable
+  Variable(Type type);
   ~Variable() = default;
 };
 

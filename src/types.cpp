@@ -13,3 +13,8 @@ std::string BaseTypeToString(BaseType type)
   }
 }
 #undef OUTPUT_TYPE
+
+Variable::Variable(Type type)
+  : mType(type)
+{
+}

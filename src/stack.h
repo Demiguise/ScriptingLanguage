@@ -8,7 +8,7 @@ class Stack
 public:
   Stack();
 
-  void Create(Type newType, std::string_view name);
+  void Create(Type type, std::string_view name);
 };
 
 #endif //__STACK_H__
