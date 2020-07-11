@@ -63,13 +63,15 @@ bool Executor::Execute()
       else if (mStack.GetVariable(name, var))
       {
         //We've got a variable matching this.
-        if (tokens[2].first == Token::Equals)
+        if (tokens[1].first == Token::Equals)
         {
           //Got to update this variable
-          
+          if (!var.Set(tokens[2].second.mRaw))
+          {
+            //Error case
+          }
         }
       }
-
     }
   }
 
