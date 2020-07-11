@@ -59,12 +59,12 @@ private:
   std::ifstream mStream;
   int mCurLine = 1;
 
-  std::optional<int> Parse_Internal(std::string& outStatement, TTokenVec& outTokens);
+  std::optional<int> Parse_Internal(std::string& outStatement, TTokenGroup& outTokens);
 
 public:
   Tokeniser(std::string filePath);
 
-  std::optional<int> Parse(std::string& outStatement, TTokenVec& outTokens);
+  std::optional<int> Parse(std::string& outStatement, TTokenGroup& outTokens);
 };
 
 #endif //__TOKENISER_H__
