@@ -71,6 +71,11 @@ bool Executor::Execute()
     }
     std::cout << "]" << std::endl << std::flush;
 
+    if (tokens.front().first == Token::Comment)
+    {
+      //Ignore comments
+      continue;
+    }
   }
 
   Variable testVar;
