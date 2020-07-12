@@ -1,4 +1,5 @@
 #include "types.h"
+#include <limits>
 
 Type Type::Null(BaseType::Null, "Null");
 
@@ -20,4 +21,19 @@ Type::Type(BaseType type, std::string typeName)
   : mBase(type)
   , mName(typeName)
 {
+}
+
+size_t Type::SizeOf()
+{
+  switch (mBase)
+  {
+    case BaseType::Int: return sizeof(int);
+    case BaseType::Bool: return sizeof(bool);
+    case BaseType::String: return sizeof(std::string);
+    case BaseType::Float: return sizeof(float);
+
+    case BaseType::Null: 
+    default:
+      return UINT32_MAX;
+  }
 }

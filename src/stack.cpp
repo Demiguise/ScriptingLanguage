@@ -44,10 +44,23 @@ void Stack::Create(Type type, std::string_view name)
     return;
   }
 
-  std::cout << "Creating new [" << type.Name() << ":" << BaseTypeToString(type.Base()) << "]. Name: " << name << std::endl;
-  Frame& topFrame = mFrames.back();
+  if (type.IsNull())
+  {
+    //Error?
+    std::cout << "Cannot allocate a Null type for [" << name << "]" << std::endl;
+    return;
+  }
 
   size_t varSize = type.SizeOf();
+  if (varSize > (mStack.end() - mNext))
+  {
+    //Error?
+    std::cout << "Not enough memory available to allocate (" << varSize << ") bytes." << std::endl;
+    return;
+  }
+
+  std::cout << "Creating new [" << type.Name() << ":" << BaseTypeToString(type.Base()) << "]. Name: " << name << std::endl;
+  Frame& topFrame = mFrames.back();
   Variable newVar(name, type, &(*mNext));
   mNext += varSize;
 
