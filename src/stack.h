@@ -26,13 +26,17 @@ struct Frame
 class Stack
 {
 private:
-  using TStackFrame = std::deque<Frame>;
-  TStackFrame mFrames;
+  using TFrame = std::deque<Frame>;
+  using TStack = std::vector<unsigned char>;
+
+  TFrame mFrames;
+  TStack mStack;
+  TStack::iterator mNext;
 
   bool CheckForShadows(std::string_view name);
 
 public:
-  Stack();
+  Stack(size_t stackSize);
 
   void Create(Type type, std::string_view name);
   bool Get(std::string_view name, TVariable& outVar);

@@ -4,8 +4,11 @@
 #include <stdio.h>
 #include <algorithm>
 
-Stack::Stack()
-{}
+Stack::Stack(size_t stackSize)
+{
+  mStack.resize(stackSize);
+  mNext = mStack.begin();
+}
 
 //False on no shadows existing
 //Shadows being other variables named the same thing.
