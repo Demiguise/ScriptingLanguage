@@ -51,7 +51,7 @@ bool Executor::Execute()
   std::string raw_statement = "";
   TTokenGroup tokens;
 
-  mStack.EnterFrame();
+  mStack.EnterFrame(FrameType::Function);
 
   while (!mTokeniser.Parse(raw_statement, tokens).has_value())
   {
@@ -69,35 +69,6 @@ bool Executor::Execute()
       bFirst = false;
     }
     std::cout << "]" << std::endl << std::flush;
-
-    if (tokens[0].first == Token::Literal)
-    {
-      auto name = tokens[0].second.mRaw;
-
-      Variable var;
-      Type type = sNullType;
-      if (IsAType(name, type))
-      {
-        //We have a valid type
-        if (tokens[1].first == Token::Literal)
-        {
-          //This MUST be an identifer
-          mStack.CreateVariable(type, tokens[1].second.mRaw);
-        }
-      }
-      else if (mStack.GetVariable(name, var))
-      {
-        //We've got a variable matching this.
-        if (tokens[1].first == Token::Equals)
-        {
-          //Got to update this variable
-          if (!var.Set(tokens[2].second.mRaw))
-          {
-            //Error case
-          }
-        }
-      }
-    }
   }
 
   return true;
