@@ -1,6 +1,8 @@
 #include "types.h"
 #include <stdexcept>
 
+Type Type::Null(BaseType::Null, "Null");
+
 #define OUTPUT_TYPE(type) case type: return #type
 std::string BaseTypeToString(BaseType type)
 {

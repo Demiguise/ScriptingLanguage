@@ -33,7 +33,6 @@ public:
 
   static Type Null;
 };
-Type Type::Null(BaseType::Null, "Null");
 
 class Variable
 {
