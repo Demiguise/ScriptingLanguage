@@ -10,10 +10,13 @@ private:
   Tokeniser mTokeniser;
   Stack mStack;
 
+  bool HandleTokens(TTokenGroup tokens);
+
+  bool IsAVariable(std::string_view arg, Variable& outVar);
+  bool IsAnIdentifier(std::string_view arg);
   bool IsAType(std::string_view arg, Type& outType);
   bool IsAKeyword(std::string_view arg);
   bool IsABuiltin(std::string_view arg);
-
 public:
   Executor(std::string scriptPath);
   
