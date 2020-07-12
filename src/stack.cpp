@@ -58,9 +58,9 @@ bool Stack::Get(std::string_view name, Variable& outVar)
   }
 }
 
-void Stack::EnterFrame()
+void Stack::EnterFrame(FrameType type)
 {
-  mFrames.push_back(Frame());
+  mFrames.push_back(Frame(type));
   std::cout << "Entered new stack frame" << std::endl;
 }
 

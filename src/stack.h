@@ -8,9 +8,19 @@
 
 using TVarVec = std::vector<Variable>;
 
+enum class FrameType
+{
+  Base,
+  Function,
+};
+
 struct Frame
 {
   TVarVec mVariables;
+  FrameType mType;
+
+  Frame(FrameType type)
+    : mType(type) {}
 };
 
 class Stack
@@ -27,7 +37,7 @@ public:
   void Create(Type type, std::string_view name);
   bool Get(std::string_view name, Variable& outVar);
 
-  void EnterFrame();
+  void EnterFrame(FrameType type);
   void ExitFrame();
 };
 
