@@ -42,7 +42,7 @@ private:
 public:
   Stack(size_t stackSize);
 
-  void Create(Type type, std::string_view name);
+  bool Create(Type type, std::string_view name, Variable& outVar);
   bool Get(std::string_view name, Variable& outVar);
 
   void EnterFrame(FrameType type);

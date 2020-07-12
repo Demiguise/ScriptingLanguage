@@ -35,20 +35,20 @@ bool Stack::CheckForShadows(std::string_view name)
   return false;
 }
 
-void Stack::Create(Type type, std::string_view name)
+bool Stack::Create(Type type, std::string_view name, Variable& outVar)
 {
   if (mFrames.size() == 0)
   {
     //Error?
     std::cout << "No stack frames in use" << std::endl;
-    return;
+    return false;
   }
 
   if (type.IsNull())
   {
     //Error?
     std::cout << "Cannot allocate a Null type for [" << name << "]" << std::endl;
-    return;
+    return false;
   }
 
   size_t varSize = type.SizeOf();
@@ -56,22 +56,22 @@ void Stack::Create(Type type, std::string_view name)
   {
     //Error?
     std::cout << "Not enough memory available to allocate (" << varSize << ") bytes." << std::endl;
-    return;
+    return false;
   }
 
   std::cout << "Creating new [" << type.Name() << ":" << BaseTypeToString(type.Base()) << "]. Name: " << name << std::endl;
   Frame& topFrame = mFrames.back();
-  Variable newVar(name, type, &(*mNext));
+
+  outVar = topFrame.mVariables.emplace_back(name, type, &(*mNext));
   mNext += varSize;
-
   topFrame.mUsedBytes += varSize;
-
-  topFrame.mVariables.push_back(newVar);
 
   if (CheckForShadows(name))
   {
     std::cout << "An existing variable named [" << name << " already exists." << std::endl;
   }
+
+  return true;
 }
 
 bool Stack::Get(std::string_view name, Variable& outVar)

@@ -10,7 +10,7 @@
 
 Executor::Executor(std::string scriptPath)
   : mTokeniser(scriptPath)
-  , mStack(0)
+  , mStack(1024 * 16) //16Kib
 {}
 
 using TTypeVec = std::vector<Type>;
@@ -70,6 +70,13 @@ bool Executor::Execute()
       bFirst = false;
     }
     std::cout << "]" << std::endl << std::flush;
+
+  }
+
+  Variable testVar;
+  if (mStack.Create(sTypes[0], "Test", testVar))
+  {
+    testVar.Set("14");
   }
 
   return true;
