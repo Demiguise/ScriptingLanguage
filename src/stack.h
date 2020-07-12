@@ -20,9 +20,11 @@ struct Frame
 {
   TVarVec mVariables;
   FrameType mType;
+  size_t mUsedBytes;
 
   Frame(FrameType type)
-    : mType(type) {}
+    : mType(type)
+    , mUsedBytes(0) {}
 };
 
 class Stack

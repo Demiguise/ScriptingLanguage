@@ -46,7 +46,13 @@ void Stack::Create(Type type, std::string_view name)
 
   std::cout << "Creating new [" << type.Name() << ":" << BaseTypeToString(type.Base()) << "]. Name: " << name << std::endl;
   Frame& topFrame = mFrames.back();
-  Variable newVar(name, type, nullptr);
+
+  size_t varSize = type.SizeOf();
+  Variable newVar(name, type, &(*mNext));
+  mNext += varSize;
+
+  topFrame.mUsedBytes += varSize;
+
   topFrame.mVariables.push_back(newVar);
 
   if (CheckForShadows(name))
