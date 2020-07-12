@@ -1,5 +1,6 @@
 #include "variables.h"
 #include <stdexcept>
+#include <new>
 
 Variable::Variable()
   : mName("Null")
@@ -12,7 +13,13 @@ Variable::Variable(std::string_view name, Type type, Byte* pDataBlock)
   : mName(name)
   , mType(type)
   , mData(pDataBlock)
-{}
+{
+  if (mType.Base() == BaseType::String)
+  {
+    //Construct this string on the stack space allocated to us
+    new(pDataBlock) std::string();
+  }
+}
 
 Variable::~Variable()
 {
