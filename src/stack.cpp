@@ -24,7 +24,7 @@ void Stack::Create(Type type, std::string_view name)
   }
 
   std::cout << "Creating new [" << type.Name() << ":" << BaseTypeToString(type.Base()) << "]. Name: " << name << std::endl;
-  Frame& topFrame = mFrames.top();
+  Frame& topFrame = mFrames.back();
   Variable newVar(type, name);
   topFrame.mVariables.push_back(newVar);
 
@@ -43,7 +43,7 @@ bool Stack::Get(std::string_view name, Variable& outVar)
     return false;
   }
 
-  Frame& topFrame = mFrames.top();
+  Frame& topFrame = mFrames.back();
   auto varIter = std::find_if(topFrame.mVariables.begin(), topFrame.mVariables.end(), 
                 [&](Variable& ele) { return ele.Name() == name; } );
 
@@ -60,7 +60,7 @@ bool Stack::Get(std::string_view name, Variable& outVar)
 
 void Stack::EnterFrame()
 {
-  mFrames.push(Frame());
+  mFrames.push_back(Frame());
   std::cout << "Entered new stack frame" << std::endl;
 }
 
@@ -68,7 +68,7 @@ void Stack::ExitFrame()
 {
   if (mFrames.size() > 0)
   {
-    mFrames.pop();
+    mFrames.pop_back();
     std::cout << "Exited stack frame" << std::endl;
   }
 }

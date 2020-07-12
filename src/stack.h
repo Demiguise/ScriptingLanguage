@@ -2,7 +2,7 @@
 #define __STACK_H__
 
 #include "types.h"
-#include <stack>
+#include <deque>
 #include <vector>
 #include <optional>
 
@@ -16,7 +16,7 @@ struct Frame
 class Stack
 {
 private:
-  using TStackFrame = std::stack<Frame>;
+  using TStackFrame = std::deque<Frame>;
   TStackFrame mFrames;
 
   bool CheckForShadows(std::string_view name);
