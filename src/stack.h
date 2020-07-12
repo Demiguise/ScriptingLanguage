@@ -6,7 +6,7 @@
 #include <vector>
 #include <optional>
 
-using TVarVec = std::vector<Variable>;
+using TVarVec = std::vector<TVariable>;
 
 enum class FrameType
 {
@@ -35,7 +35,7 @@ public:
   Stack();
 
   void Create(Type type, std::string_view name);
-  bool Get(std::string_view name, Variable& outVar);
+  bool Get(std::string_view name, TVariable& outVar);
 
   void EnterFrame(FrameType type);
   void ExitFrame();

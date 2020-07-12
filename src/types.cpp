@@ -17,15 +17,15 @@ std::string BaseTypeToString(BaseType type)
 }
 #undef OUTPUT_TYPE
 
-Variable::Variable(Type type, std::string_view name)
-  : mType(type)
-  , mName(name)
+Type::Type(BaseType type, std::string typeName)
+  : mBase(type)
+  , mName(typeName)
 {
   //Default set our data to 0.
   mData.i = 0;
 }
 
-bool Variable::Set(const std::string_view& rhs)
+bool Type::Set(const std::string_view& rhs)
 {
   /*
     This feels foul at the moment, but I'm sure we can make it better.
@@ -35,7 +35,7 @@ bool Variable::Set(const std::string_view& rhs)
     How would a variable store them?
   */
   std::string arg(rhs);
-  switch (mType.Base())
+  switch (mBase)
   {
     case BaseType::Null:
     {
@@ -98,10 +98,10 @@ bool Variable::Set(const std::string_view& rhs)
   }
 }
 
-bool Variable::Add(const std::string_view& rhs)
+bool Type::Add(const std::string_view& rhs)
 {
   std::string arg(rhs);
-  switch (mType.Base())
+  switch (mBase)
   {
     case BaseType::Null:
     {

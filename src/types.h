@@ -21,25 +21,6 @@ private:
   BaseType mBase;
   std::string mName;
 
-public:
-  Type(BaseType base, std::string typeName)
-    : mBase(base)
-    , mName(typeName)
-  {}
-
-  BaseType Base() { return mBase; }
-  std::string Name() { return mName; }
-  bool IsNull() { return mBase == BaseType::Null; }
-
-  static Type Null;
-};
-
-class Variable
-{
-private:
-  Type mType = Type::Null;
-  std::string mName;
-
   struct
   {
     union
@@ -53,14 +34,19 @@ private:
   } mData;
 
 public:
-  Variable() = default;
-  Variable(Type type, std::string_view name);
-  ~Variable() = default;
+  Type(BaseType base, std::string typeName);
 
+  BaseType Base() { return mBase; }
   std::string Name() { return mName; }
 
   bool Set(const std::string_view& rhs);
   bool Add(const std::string_view& rhs);
+
+  bool IsNull() { return mBase == BaseType::Null; }
+
+  static Type Null;
 };
+
+using TVariable = std::pair<Type, std::string>;
 
 #endif //~__TYPES_H__
