@@ -11,6 +11,24 @@ Stack::Stack()
 //Shadows being other variables named the same thing.
 bool Stack::CheckForShadows(std::string_view name)
 {
+  for (auto frame : mFrames)
+  {
+    auto varIter = std::find_if(frame.mVariables.begin(), frame.mVariables.end(), 
+                  [&](Variable& ele) { return ele.Name() == name; } );
+
+    if (varIter != frame.mVariables.end())
+    {
+      //A shadow exists
+      return true;
+    }
+
+    if (frame.mType == FrameType::Function)
+    {
+      //We cannot go further back then THIS function call.
+      return false;
+    }
+  }
+
   return false;
 }
 
@@ -43,18 +61,22 @@ bool Stack::Get(std::string_view name, Variable& outVar)
     return false;
   }
 
-  Frame& topFrame = mFrames.back();
-  auto varIter = std::find_if(topFrame.mVariables.begin(), topFrame.mVariables.end(), 
-                [&](Variable& ele) { return ele.Name() == name; } );
+  for (auto frame : mFrames)
+  {
+    auto varIter = std::find_if(frame.mVariables.begin(), frame.mVariables.end(), 
+                  [&](Variable& ele) { return ele.Name() == name; } );
 
-  if (varIter == topFrame.mVariables.end())
-  {
-    return false;
-  }
-  else
-  {
-    outVar = *varIter;
-    return true;
+    if (varIter != frame.mVariables.end())
+    {
+      outVar = *varIter;
+      return true;
+    }
+
+    if (frame.mType == FrameType::Function)
+    {
+      //We cannot go further back then THIS function call.
+      return false;
+    }
   }
 }
 
