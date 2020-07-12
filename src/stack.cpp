@@ -14,7 +14,7 @@ bool Stack::CheckForShadows(std::string_view name)
   return false;
 }
 
-void Stack::CreateVariable(Type type, std::string_view name)
+void Stack::Create(Type type, std::string_view name)
 {
   if (mFrames.size() == 0)
   {
@@ -34,7 +34,7 @@ void Stack::CreateVariable(Type type, std::string_view name)
   }
 }
 
-bool Stack::GetVariable(std::string_view name, Variable& outVar)
+bool Stack::Get(std::string_view name, Variable& outVar)
 {
   if (mFrames.size() == 0)
   {

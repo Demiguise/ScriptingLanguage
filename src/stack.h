@@ -24,9 +24,8 @@ private:
 public:
   Stack();
 
-  void CreateVariable(Type type, std::string_view name);
-
-  bool GetVariable(std::string_view name, Variable& outVar);
+  void Create(Type type, std::string_view name);
+  bool Get(std::string_view name, Variable& outVar);
 
   void EnterFrame();
   void ExitFrame();
