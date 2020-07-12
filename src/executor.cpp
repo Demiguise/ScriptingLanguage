@@ -10,6 +10,7 @@
 
 Executor::Executor(std::string scriptPath)
   : mTokeniser(scriptPath)
+  , mStack(0)
 {}
 
 using TTypeVec = std::vector<Type>;

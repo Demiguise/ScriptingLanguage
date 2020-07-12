@@ -10,6 +10,9 @@ set(SRCS
 
   types.h
   types.cpp
+
+  variables.h
+  variables.cpp
 )
 
 set(Common_Defines

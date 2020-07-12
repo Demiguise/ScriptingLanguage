@@ -13,7 +13,6 @@ enum class BaseType
   String,
   Float,
 };
-
 std::string BaseTypeToString(BaseType type);
 
 class Type
@@ -21,22 +20,16 @@ class Type
 private:
   BaseType mBase;
   std::string mName;
-  Byte* mData;
 
 public:
   Type(BaseType base, std::string typeName);
 
   BaseType Base() { return mBase; }
   std::string Name() { return mName; }
-
-  bool Set(const std::string_view& rhs);
-  bool Add(const std::string_view& rhs);
-
+  size_t SizeOf();
   bool IsNull() { return mBase == BaseType::Null; }
 
   static Type Null;
 };
-
-using TVariable = std::pair<Type, std::string>;
 
 #endif //~__TYPES_H__

@@ -1,12 +1,14 @@
 #ifndef __STACK_H__
 #define __STACK_H__
 
+#include "common.h"
 #include "types.h"
+#include "variables.h"
 #include <deque>
 #include <vector>
 #include <optional>
 
-using TVarVec = std::vector<TVariable>;
+using TVarVec = std::vector<Variable>;
 
 enum class FrameType
 {
@@ -39,7 +41,7 @@ public:
   Stack(size_t stackSize);
 
   void Create(Type type, std::string_view name);
-  bool Get(std::string_view name, TVariable& outVar);
+  bool Get(std::string_view name, Variable& outVar);
 
   void EnterFrame(FrameType type);
   void ExitFrame();

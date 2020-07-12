@@ -17,7 +17,7 @@ bool Stack::CheckForShadows(std::string_view name)
   for (auto frame : mFrames)
   {
     auto varIter = std::find_if(frame.mVariables.begin(), frame.mVariables.end(), 
-                  [&](TVariable& ele) { return ele.second == name; } );
+                  [&](Variable& ele) { return ele.Name() == name; } );
 
     if (varIter != frame.mVariables.end())
     {
@@ -46,7 +46,7 @@ void Stack::Create(Type type, std::string_view name)
 
   std::cout << "Creating new [" << type.Name() << ":" << BaseTypeToString(type.Base()) << "]. Name: " << name << std::endl;
   Frame& topFrame = mFrames.back();
-  TVariable newVar(type, name);
+  Variable newVar(name, type, nullptr);
   topFrame.mVariables.push_back(newVar);
 
   if (CheckForShadows(name))
@@ -55,7 +55,7 @@ void Stack::Create(Type type, std::string_view name)
   }
 }
 
-bool Stack::Get(std::string_view name, TVariable& outVar)
+bool Stack::Get(std::string_view name, Variable& outVar)
 {
   if (mFrames.size() == 0)
   {
@@ -67,7 +67,7 @@ bool Stack::Get(std::string_view name, TVariable& outVar)
   for (auto frame : mFrames)
   {
     auto varIter = std::find_if(frame.mVariables.begin(), frame.mVariables.end(), 
-                  [&](TVariable& ele) { return ele.second == name; } );
+                  [&](Variable& ele) { return ele.Name() == name; } );
 
     if (varIter != frame.mVariables.end())
     {
