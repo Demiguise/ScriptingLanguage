@@ -78,6 +78,8 @@ bool Stack::Get(std::string_view name, Variable& outVar)
       return false;
     }
   }
+
+  return false;
 }
 
 void Stack::EnterFrame(FrameType type)
