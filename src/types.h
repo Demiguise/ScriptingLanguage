@@ -30,13 +30,15 @@ public:
   BaseType Base() { return mBase; }
   std::string Name() { return mName; }
   bool IsNull() { return mBase == BaseType::Null; }
+
+  static Type Null;
 };
-static Type sNullType(BaseType::Null, "Null");
+Type Type::Null(BaseType::Null, "Null");
 
 class Variable
 {
 private:
-  Type mType = sNullType;
+  Type mType = Type::Null;
   std::string mName;
 
   struct
