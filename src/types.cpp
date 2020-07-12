@@ -20,9 +20,8 @@ std::string BaseTypeToString(BaseType type)
 Type::Type(BaseType type, std::string typeName)
   : mBase(type)
   , mName(typeName)
+  , mData(nullptr)
 {
-  //Default set our data to 0.
-  mData.i = 0;
 }
 
 bool Type::Set(const std::string_view& rhs)
@@ -45,7 +44,7 @@ bool Type::Set(const std::string_view& rhs)
     {
       try
       {
-        mData.i = std::stoi(arg);
+        *(int*)mData = std::stoi(arg);
         return true;
       }
       catch (const std::invalid_argument& e)
@@ -61,12 +60,12 @@ bool Type::Set(const std::string_view& rhs)
     {
       if (rhs == "true")
       {
-        mData.b = true;
+        *(bool*)mData = true;
         return true;
       }
       else if (rhs == "false")
       {
-        mData.b = false;
+        *(bool*)mData = false;
         return true;
       }
       else
@@ -76,14 +75,14 @@ bool Type::Set(const std::string_view& rhs)
     }
     case BaseType::String:
     {
-      mData.str = std::move(arg);
-      return false;
+      *(std::string*)mData = std::move(arg);
+      return true;
     }
     case BaseType::Float:
     {
       try
       {
-        mData.f = std::stof(arg);
+        *(float*)mData = std::stof(arg);
         return true;
       }
       catch (const std::invalid_argument& e)
@@ -111,7 +110,7 @@ bool Type::Add(const std::string_view& rhs)
     {
       try
       {
-        mData.i += std::stoi(arg);
+        *(int*)mData += std::stoi(arg);
         return true;
       }
       catch (const std::invalid_argument& e)
@@ -129,14 +128,14 @@ bool Type::Add(const std::string_view& rhs)
     }
     case BaseType::String:
     {
-      mData.str += std::move(arg);
-      return false;
+      *(std::string*)mData += std::move(arg);
+      return true;
     }
     case BaseType::Float:
     {
       try
       {
-        mData.f += std::stof(arg);
+        *(float*)mData += std::stof(arg);
         return true;
       }
       catch (const std::invalid_argument& e)

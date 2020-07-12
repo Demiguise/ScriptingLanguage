@@ -1,6 +1,7 @@
 #ifndef __TYPES_H__
 #define __TYPES_H__
 
+#include "common.h"
 #include <string>
 
 //Temporary while we are dealing with JUST POD types
@@ -20,18 +21,7 @@ class Type
 private:
   BaseType mBase;
   std::string mName;
-
-  struct
-  {
-    union
-    {
-      int i;
-      bool b;
-      float f;
-    };
-
-    std::string str;
-  } mData;
+  Byte* mData;
 
 public:
   Type(BaseType base, std::string typeName);
