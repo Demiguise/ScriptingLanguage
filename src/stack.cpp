@@ -59,17 +59,17 @@ bool Stack::Create(Type type, std::string_view name, Variable& outVar)
     return false;
   }
 
+  if (CheckForShadows(name))
+  {
+    std::cout << "An existing variable named [" << name << " already exists." << std::endl;
+  }
+
   std::cout << "Creating new [" << type.Name() << ":" << BaseTypeToString(type.Base()) << "]. Name: " << name << std::endl;
   Frame& topFrame = mFrames.back();
 
   outVar = topFrame.mVariables.emplace_back(name, type, &(*mNext));
   mNext += varSize;
   topFrame.mUsedBytes += varSize;
-
-  if (CheckForShadows(name))
-  {
-    std::cout << "An existing variable named [" << name << " already exists." << std::endl;
-  }
 
   return true;
 }
