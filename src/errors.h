@@ -16,6 +16,10 @@ enum class VariableError
 enum class StackError
 {
   Success = 0,
+  NoStackFrames,
+  CannotAllocateNull,
+  NotEnoughMemory,
+  VariableDoesNotExist,
 };
 
 enum class ExecutorError

@@ -35,28 +35,22 @@ bool Stack::CheckForShadows(std::string_view name)
   return false;
 }
 
-bool Stack::Create(Type type, std::string_view name, Variable& outVar)
+TError Stack::Create(Type type, std::string_view name, Variable& outVar)
 {
   if (mFrames.size() == 0)
   {
-    //Error?
-    std::cout << "No stack frames in use" << std::endl;
-    return false;
+    return StackError::NoStackFrames;
   }
 
   if (type.IsNull())
   {
-    //Error?
-    std::cout << "Cannot allocate a Null type for [" << name << "]" << std::endl;
-    return false;
+    return StackError::CannotAllocateNull;
   }
 
   size_t varSize = type.SizeOf();
   if (varSize > (mStack.end() - mNext))
   {
-    //Error?
-    std::cout << "Not enough memory available to allocate (" << varSize << ") bytes." << std::endl;
-    return false;
+    return StackError::NotEnoughMemory;
   }
 
   if (CheckForShadows(name))
@@ -71,16 +65,14 @@ bool Stack::Create(Type type, std::string_view name, Variable& outVar)
   mNext += varSize;
   topFrame.mUsedBytes += varSize;
 
-  return true;
+  return StackError::Success;
 }
 
-bool Stack::Get(std::string_view name, Variable& outVar)
+TError Stack::Get(std::string_view name, Variable& outVar)
 {
   if (mFrames.size() == 0)
   {
-    //Error
-    std::cout << "No stack frames in use" << std::endl;
-    return false;
+    return StackError::NoStackFrames;
   }
 
   for (auto frame : mFrames)
@@ -91,17 +83,17 @@ bool Stack::Get(std::string_view name, Variable& outVar)
     if (varIter != frame.mVariables.end())
     {
       outVar = *varIter;
-      return true;
+      return StackError::Success;
     }
 
     if (frame.mType == FrameType::Function)
     {
       //We cannot go further back then THIS function call.
-      return false;
+      return StackError::VariableDoesNotExist;
     }
   }
 
-  return false;
+  return StackError::VariableDoesNotExist;
 }
 
 void Stack::EnterFrame(FrameType type)
