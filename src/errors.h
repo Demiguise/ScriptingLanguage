@@ -2,6 +2,7 @@
 #define __ERRORS_H__
 
 #include <system_error>
+#include <optional>
 
 enum class TokenError
 {
@@ -39,5 +40,7 @@ std::error_code make_error_code(TokenError);
 std::error_code make_error_code(VariableError);
 std::error_code make_error_code(StackError);
 std::error_code make_error_code(ExecutorError);
+
+using TError = std::optional<std::error_code>;
 
 #endif //~__ERRORS_H__
