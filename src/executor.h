@@ -1,6 +1,7 @@
 #ifndef __EXECUTOR_H__
 #define __EXECUTOR_H__
 
+#include "common.h"
 #include "tokeniser.h"
 #include "stack.h"
 
