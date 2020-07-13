@@ -65,6 +65,7 @@ bool Executor::HandleTokens(TTokenGroup tokens)
     I should probably research what a compiler attempts to do?
   */
 
+  TError err;
   Type type = Type::Null;
   Variable var;
 
@@ -81,7 +82,12 @@ bool Executor::HandleTokens(TTokenGroup tokens)
         if (IsAnIdentifier(varName.second.mRaw))
         {
           //We can make a variable from this
-          mStack.Create(type, varName.second.mRaw, var);
+          err = mStack.Create(type, varName.second.mRaw, var);
+          if (err)
+          {
+            return false;
+          }
+
           const auto& next = *(++iter);
           if (next.first == Token::Statement_End)
           {
