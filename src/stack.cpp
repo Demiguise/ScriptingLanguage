@@ -106,6 +106,7 @@ void Stack::ExitFrame()
 {
   if (mFrames.size() > 0)
   {
+    mNext -= mFrames.back().mUsedBytes;
     mFrames.pop_back();
     std::cout << "Exited stack frame" << std::endl;
   }
