@@ -5,22 +5,22 @@
 
 enum class TokenError
 {
-  MissingNo,
+  Success = 0,
 };
 
 enum class VariableError
 {
-
+  Success = 0,
 };
 
 enum class StackError
 {
-
+  Success = 0,
 };
 
 enum class ExecutorError
 {
-
+  Success = 0,
 };
 
 namespace std
