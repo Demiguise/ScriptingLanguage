@@ -13,6 +13,9 @@ set(SRCS
 
   variables.h
   variables.cpp
+
+  errors.h
+  errors.cpp
 )
 
 set(Common_Defines
