@@ -47,6 +47,14 @@ namespace
     {
       switch (static_cast<StackError>(err))
       {
+        case StackError::NoStackFrames:
+          return "No stack frames are currently in use";
+        case StackError::CannotAllocateNull:
+          return "Cannot allocate memory on the stack for a NULL base type";
+        case StackError::NotEnoughMemory:
+          return "Cannot allocate enough memory for new variable";
+        case StackError::VariableDoesNotExist:
+          return "The requested variable does not exist";
         default:
           return "Unknown error";
       }
