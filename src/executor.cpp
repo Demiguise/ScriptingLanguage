@@ -8,6 +8,22 @@
 
 #include "types.h"
 
+
+//Tree structur
+
+struct ASTNode
+{
+  using TNodes = std::vector<ASTNode>;
+  using TTokens = std::vector<TTokenPair>;
+  TNodes mChildren;
+  TTokens mTokens;
+
+  bool IsLeaf()
+  {
+    return (mChildren.size() == 0);
+  }
+};
+
 Executor::Executor(std::string scriptPath)
   : mTokeniser(scriptPath)
   , mStack(1024 * 16) //16Kib
@@ -59,118 +75,6 @@ bool Executor::IsABuiltin(std::string_view arg)
 
 bool Executor::HandleTokens(TTokenGroup tokens)
 {
-  /*
-    I REALLY don't like doing this, but I can't visualise a nice way
-    of defining the decisions and functions one should take.
-    I should probably research what a compiler attempts to do?
-  */
-
-  TError err;
-  Type type = Type::Null;
-  Variable var;
-
-  auto iter = tokens.begin();
-  const auto& first = (*iter);
-  if (first.first == Token::Literal)
-  {
-    const std::string_view& raw = first.second.mRaw;
-    if (IsAType(raw, type))
-    {
-      const auto& varName = *(++iter);
-      if (varName.first == Token::Literal)
-      {
-        if (IsAnIdentifier(varName.second.mRaw))
-        {
-          //We can make a variable from this
-          err = mStack.Create(type, varName.second.mRaw, var);
-          if (err)
-          {
-            return false;
-          }
-
-          const auto& next = *(++iter);
-          if (next.first == Token::Statement_End)
-          {
-            return true;
-          }
-          else if (next.first == Token::Equals)
-          {
-            //Handle assignment
-            Variable rhsVar;
-            const auto& value = *(++iter);
-            if (value.first == Token::Literal)
-            {
-              if (!var.Set(value.second.mRaw))
-              {
-                return false;
-              }
-            }
-            else if ( value.first == Token::Double_Quote ||
-                      value.first == Token::Single_Quote)
-            {
-              //Handle strings
-              const auto& strValue = *(++iter);
-              if (strValue.first == Token::Literal)
-              {
-                var.Set(strValue.second.mRaw);
-              }
-              else
-              {
-                //Failure
-                return false;
-              }
-            }
-            else if (IsAVariable(value.second.mRaw, rhsVar))
-            {
-              //Handle assignment
-            }
-            else
-            {
-              //Failure
-              return false;
-            }
-          }
-          else
-          {
-            return false;
-          }
-        }
-        else
-        {
-          //Failure
-          return false;
-        }
-      }
-      else
-      {
-        //Failure
-        return false;
-      }
-    }
-    else if (IsAKeyword(raw))
-    {
-      return false;
-    }
-    else if (IsABuiltin(raw))
-    {
-      return false;
-    }
-    else if (IsAVariable(raw, var))
-    {
-      return false;
-    }
-    else
-    {
-      //Failure
-      return false;
-    }
-  }
-  else
-  {
-    //Failure
-    return false;
-  }
-
   return true;
 }
 
