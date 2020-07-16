@@ -36,6 +36,7 @@ enum class Token
 };
 
 std::string TypeToString(Token type);
+bool IsAnOperator(Token type);
 
 struct IndexPair
 {

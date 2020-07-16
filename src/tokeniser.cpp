@@ -43,6 +43,29 @@ std::string TypeToString(Token type)
 }
 #undef OUTPUT_TYPE
 
+bool IsAnOperator(Token type)
+{
+  switch (type)
+  {
+    case Token::Equals:
+    case Token::Addition:
+    case Token::Subtraction:
+    case Token::Multiply:
+    case Token::Divide:
+    case Token::Paren_Open:
+    case Token::Paren_Close:
+    case Token::Curly_Open:
+    case Token::Curly_Close:
+    case Token::Bracket_Open:
+    case Token::Bracket_Close:
+    case Token::Statement_End:
+      return true;
+
+    default: 
+      return false;
+  }
+}
+
 Tokeniser::Tokeniser(std::string filePath)
   : mStream(filePath)
 {
