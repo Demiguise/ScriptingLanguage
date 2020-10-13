@@ -3,6 +3,7 @@
 
 #include "common.h"
 #include <string>
+#include <unordered_map>
 
 //Temporary while we are dealing with JUST POD types
 enum class BaseType
@@ -30,6 +31,19 @@ public:
   bool IsNull() { return mBase == BaseType::Null; }
 
   static Type Null;
+};
+
+class TypeRegistry
+{
+private:
+  using TRegistry = std::unordered_map<std::string, Type>;
+  TRegistry mRegistry;
+
+public:
+  TypeRegistry() = default;
+
+  void RegisterTypedef(BaseType base, std::string name);
+  Type& FindType(std::string name);
 };
 
 #endif //~__TYPES_H__
