@@ -1,4 +1,5 @@
 #include "executor.h"
+#include "ASTree.h"
 
 #include <stdio.h>
 #include <iostream>
@@ -6,75 +7,21 @@
 #include <vector>
 #include <algorithm>
 
-#include "types.h"
-
-
-//Tree structur
-
-struct ASTNode
-{
-  using TNodes = std::vector<ASTNode>;
-  using TTokens = std::vector<TTokenPair>;
-  TNodes mChildren;
-  TTokens mTokens;
-
-  bool IsLeaf()
-  {
-    return (mChildren.size() == 0);
-  }
-};
-
 Executor::Executor(std::string scriptPath)
   : mTokeniser(scriptPath)
   , mStack(1024 * 16) //16Kib
 {}
 
-using TTypeVec = std::vector<Type>;
-TTypeVec sTypes = {
-  { BaseType::Int,    "int" },
-  { BaseType::Bool,   "bool" },
-  { BaseType::String, "string" },
-  { BaseType::Float,  "float" },
-};
-
-bool Executor::IsAVariable(std::string_view arg, Variable& outVar)
+bool Executor::HandleTokens(TTokenGroup tokens)
 {
-  return false;
-}
+  ASTNode tree;
 
-bool Executor::IsAnIdentifier(std::string_view arg)
-{
-  return true;
-}
-
-bool Executor::IsAType(std::string_view arg, Type& outType)
-{
-  auto type = std::find_if(sTypes.begin(), sTypes.end(), 
-    [&](Type& element) { return element.Name() == arg; });
-
-  if (type == sTypes.end())
+  if (tokens.back().first != Token::Statement_End)
   {
     return false;
   }
-  else
-  {
-    outType = *type;
-    return true;
-  }
-}
 
-bool Executor::IsAKeyword(std::string_view arg)
-{
-  return false;
-}
-
-bool Executor::IsABuiltin(std::string_view arg)
-{
-  return false;
-}
-
-bool Executor::HandleTokens(TTokenGroup tokens)
-{
+  ASTNode::BuildTree(tokens.begin(), --(tokens.end()), tree);
   return true;
 }
 
