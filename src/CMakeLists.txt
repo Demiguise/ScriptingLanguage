@@ -5,6 +5,9 @@ set(SRCS
   tokeniser.h
   tokeniser.cpp
 
+  ASTree.h
+  ASTree.cpp
+
   stack.h
   stack.cpp
 
