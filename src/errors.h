@@ -2,6 +2,7 @@
 #define __ERRORS_H__
 
 #include <system_error>
+#include <optional>
 
 enum class TokenError
 {
@@ -45,5 +46,21 @@ std::error_code make_error_code(StackError);
 std::error_code make_error_code(ExecutorError);
 
 using TError = std::error_code;
+
+template<typename T>
+class Result
+{
+  std::optional<T> mResult;
+  TError mErr;
+
+public:
+  Result(T data)
+    : mResult(data) {}
+  Result(TError err)
+    : mErr(err) {}
+
+  operator bool() { return mResult; }
+  T operator*() { return *mResult; }
+};
 
 #endif //~__ERRORS_H__
