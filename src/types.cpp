@@ -1,7 +1,15 @@
 #include "types.h"
 #include <limits>
 
-Type Type::Void(BaseType::Void, "Void");
+namespace util
+{
+  TType CreateType(BaseType type, std::string_view name)
+  {
+    return std::make_shared<Type>(type, name);
+  }
+}
+
+TType Type::Void = util::CreateType(BaseType::Void, "Void");
 
 #define OUTPUT_TYPE(type) case type: return #type
 std::string BaseTypeToString(BaseType type)
@@ -42,17 +50,17 @@ TypeRegistry::TypeRegistry()
 {
   //Initialize our base types
   mRegistry = {
-    { "int" , { BaseType::Int, "int" }},
-    { "bool" , { BaseType::Bool, "bool" }},
-    { "string" , { BaseType::String, "string" }},
-    { "float" , { BaseType::Float, "float" }}
+    { "int" , util::CreateType(BaseType::Int, "int")},
+    { "bool" , util::CreateType(BaseType::Bool, "bool")},
+    { "string" , util::CreateType(BaseType::String, "string")},
+    { "float" , util::CreateType(BaseType::Float, "float")}
   };
 }
 
 void TypeRegistry::RegisterTypedef(BaseType base, std::string_view name)
 {
-  Type& existingType = FindType(name);
-  if (!existingType.IsVoid())
+  TType existingType = FindType(name);
+  if (!existingType->IsVoid())
   {
     //TODO: Bubble up an error here since the type already exists
     return;
@@ -60,10 +68,10 @@ void TypeRegistry::RegisterTypedef(BaseType base, std::string_view name)
 
   //Put the new type into the registry
   std::string typeName(name);
-  mRegistry[typeName] = { base, typeName };
+  mRegistry[typeName] = std::make_shared<Type>(base, typeName);
 }
 
-Type& TypeRegistry::FindType(std::string_view name)
+TType TypeRegistry::FindType(std::string_view name)
 {
   std::string typeName(name);
   auto iter = mRegistry.find(typeName);
