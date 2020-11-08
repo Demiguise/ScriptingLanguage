@@ -3,8 +3,8 @@
 #include <new>
 
 Variable::Variable()
-  : mName("Null")
-  , mType(Type::Null)
+  : mName("NAME_NOT_SET")
+  , mType(Type::Void)
   , mData(nullptr)
 {
 }
@@ -56,7 +56,7 @@ bool Variable::Set(const std::string_view& rhs)
   std::string arg(rhs);
   switch (mType.Base())
   {
-    case BaseType::Null:
+    case BaseType::Void:
     {
       return false;
     }
@@ -128,7 +128,7 @@ bool Variable::Set(const Variable& rhs)
   */
   switch (mType.Base())
   {
-    case BaseType::Null:
+    case BaseType::Void:
     {
       return false;
     }
@@ -182,7 +182,7 @@ bool Variable::Add(const std::string_view& rhs)
   std::string arg(rhs);
   switch (mType.Base())
   {
-    case BaseType::Null:
+    case BaseType::Void:
     {
       return false;
     }
@@ -234,7 +234,7 @@ bool Variable::Add(const Variable& rhs)
 {
   switch (mType.Base())
   {
-    case BaseType::Null:
+    case BaseType::Void:
     {
       return false;
     }

@@ -20,7 +20,7 @@ enum class StackError
 {
   Success = 0,
   NoStackFrames,
-  CannotAllocateNull,
+  CannotAllocateVoid,
   NotEnoughMemory,
   VariableDoesNotExist,
 };

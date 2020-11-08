@@ -8,7 +8,7 @@
 //All other types in our language are defined from these POD types.
 enum class BaseType
 {
-  Null,
+  Void,
   Int,
   Bool,
   String,
@@ -29,9 +29,9 @@ public:
   BaseType Base() { return mBase; }
   std::string Name() { return mName; }
   size_t SizeOf();
-  bool IsNull() { return mBase == BaseType::Null; }
+  bool IsVoid() { return mBase == BaseType::Void; }
 
-  static Type Null;
+  static Type Void;
 };
 
 class TypeRegistry

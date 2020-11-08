@@ -1,14 +1,14 @@
 #include "types.h"
 #include <limits>
 
-Type Type::Null(BaseType::Null, "Null");
+Type Type::Void(BaseType::Void, "Void");
 
 #define OUTPUT_TYPE(type) case type: return #type
 std::string BaseTypeToString(BaseType type)
 {
   switch (type)
   {
-    OUTPUT_TYPE(BaseType::Null);
+    OUTPUT_TYPE(BaseType::Void);
     OUTPUT_TYPE(BaseType::Int);
     OUTPUT_TYPE(BaseType::Bool);
     OUTPUT_TYPE(BaseType::String);
@@ -32,7 +32,7 @@ size_t Type::SizeOf()
     case BaseType::String: return sizeof(std::string);
     case BaseType::Float: return sizeof(float);
 
-    case BaseType::Null: 
+    case BaseType::Void: 
     default:
       return UINT32_MAX; //This is huge on purpose to TRY and catch errors.
   }
@@ -52,7 +52,7 @@ TypeRegistry::TypeRegistry()
 void TypeRegistry::RegisterTypedef(BaseType base, std::string_view name)
 {
   Type& existingType = FindType(name);
-  if (!existingType.IsNull())
+  if (!existingType.IsVoid())
   {
     //TODO: Bubble up an error here since the type already exists
     return;
@@ -69,7 +69,7 @@ Type& TypeRegistry::FindType(std::string_view name)
   auto iter = mRegistry.find(typeName);
   if (iter == mRegistry.end())
   {
-    return Type::Null;
+    return Type::Void;
   }
 
   return iter->second;
