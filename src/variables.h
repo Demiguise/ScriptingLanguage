@@ -5,6 +5,7 @@
 #include "types.h"
 #include <string>
 #include <array>
+#include <memory>
 
 //A variable comprises a type, some data, and a name
 class Variable
@@ -32,5 +33,7 @@ public:
   bool Add(const std::string_view& rhs);
   bool Add(const Variable& rhs);
 };
+
+using TVar = std::shared_ptr<Variable>;
 
 #endif //~__VARIABLES_H__

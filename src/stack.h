@@ -6,32 +6,30 @@
 #include "variables.h"
 #include <deque>
 #include <vector>
-#include <optional>
-#include <memory>
-
-using TVar = std::shared_ptr<Variable>;
-using TVarVec = std::vector<TVar>;
-
-enum class FrameType
-{
-  Base,
-  Function,
-};
-
-struct Frame
-{
-  TVarVec mVariables;
-  FrameType mType;
-  size_t mUsedBytes;
-
-  Frame(FrameType type)
-    : mType(type)
-    , mUsedBytes(0) {}
-};
 
 class Stack
 {
+public:
+  enum class FrameType
+  {
+    Base,
+    Function,
+  };
+
 private:
+  using TVarVec = std::vector<TVar>;
+
+  struct Frame
+  {
+    TVarVec mVariables;
+    FrameType mType;
+    size_t mUsedBytes;
+
+    Frame(FrameType type)
+      : mType(type)
+      , mUsedBytes(0) {}
+  };
+
   using TFrame = std::deque<Frame>;
   using TStack = std::vector<unsigned char>;
 
