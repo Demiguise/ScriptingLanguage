@@ -96,6 +96,34 @@ TError Stack::Get(std::string_view name, Variable& outVar)
   return StackError::VariableDoesNotExist;
 }
 
+TError Stack::Update(std::string_view name, Variable& inVar)
+{
+  if (mFrames.size() == 0)
+  {
+    return StackError::NoStackFrames;
+  }
+
+  for (auto frame : mFrames)
+  {
+    auto varIter = std::find_if(frame.mVariables.begin(), frame.mVariables.end(), 
+                  [&](Variable& ele) { return ele.Name() == name; } );
+
+    if (varIter != frame.mVariables.end())
+    {
+      *varIter = inVar;
+      return StackError::Success;
+    }
+
+    if (frame.mType == FrameType::Function)
+    {
+      //We cannot go further back then THIS function call.
+      return StackError::VariableDoesNotExist;
+    }
+  }
+
+  return StackError::VariableDoesNotExist;
+}
+
 void Stack::EnterFrame(FrameType type)
 {
   mFrames.push_back(Frame(type));

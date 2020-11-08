@@ -44,6 +44,7 @@ public:
 
   TError Create(Type type, std::string_view name, Variable& outVar);
   TError Get(std::string_view name, Variable& outVar);
+  TError Update(std::string_view name, Variable& inVar);
 
   void EnterFrame(FrameType type);
   void ExitFrame();
