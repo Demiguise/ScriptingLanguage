@@ -26,6 +26,9 @@ enum class StackError
 enum class ExecutorError
 {
   Success = 0,
+  MismatchedChildrenSize,
+  UnknownOperator,
+  Temp,
 };
 
 namespace std
