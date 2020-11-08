@@ -3,6 +3,8 @@
 
 #include <system_error>
 #include <optional>
+#include <vector>
+#include <string>
 
 enum class TokenError 
 {
@@ -55,8 +57,10 @@ class Result
 {
   std::optional<T> mResult;
   TError mErr;
+  std::vector<std::string> mWarnings;
 
 public:
+  Result() = default;
   Result(T data)
     : mResult(data) {}
   Result(TError err)
@@ -72,7 +76,15 @@ public:
   Result(ExecutorError err)
     : mErr(err) {}
 
+  void SetResult(T data) { mResult = data; }
+  void ClearResult() { mResult.reset(); }
+
   TError Error() { return mErr; }
+  void SetError(TError err) { mErr = err; }
+
+  std::vector<std::string>& Warnings() { return mWarnings; }
+  void AddWarning(std::string warning) { mWarnings.push_back(warning); }
+
   operator bool() { return mResult.has_value(); }
   T operator*() { return *mResult; }
 };

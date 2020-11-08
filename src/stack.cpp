@@ -53,9 +53,11 @@ Result<TVar> Stack::Create(Type type, std::string_view name)
     return StackError::NotEnoughMemory;
   }
 
+  Result<TVar> result;
+
   if (CheckForShadows(name))
   {
-    std::cout << "An existing variable named [" << name << " already exists." << std::endl;
+    result.AddWarning("An existing variable for this name already exists");
   }
 
   std::cout << "Creating new [" << type.Name() << ":" << BaseTypeToString(type.Base()) << "]. Name: " << name << std::endl;
@@ -66,7 +68,9 @@ Result<TVar> Stack::Create(Type type, std::string_view name)
   mNext += varSize;
   topFrame.mUsedBytes += varSize;
 
-  return newVar;
+  result.SetResult(newVar);
+
+  return result;
 }
 
 Result<TVar> Stack::Get(std::string_view name)
