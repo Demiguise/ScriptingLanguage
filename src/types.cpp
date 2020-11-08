@@ -5,7 +5,8 @@ namespace util
 {
   TType CreateType(BaseType type, std::string_view name)
   {
-    return std::make_shared<Type>(type, name);
+    std::string typeName(name);
+    return std::make_shared<Type>(type, typeName);
   }
 }
 
