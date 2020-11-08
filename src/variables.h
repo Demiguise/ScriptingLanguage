@@ -12,7 +12,7 @@ class Variable
 {
 private:
   std::string mName;
-  Type mType;
+  TType mType;
   Byte* mData;
 
   //mInternal is used in the case where the variable is a temporary
@@ -20,11 +20,11 @@ private:
 
 public:
   Variable();
-  Variable(std::string_view name, Type type);
-  Variable(std::string_view name, Type type, Byte* pDataBlock);
+  Variable(std::string_view name, TType type);
+  Variable(std::string_view name, TType type, Byte* pDataBlock);
   ~Variable();
 
-  Type VarType() { return mType; }
+  TType VarType() { return mType; }
   std::string Name() { return mName; }
   
   bool Set(const std::string_view& rhs);

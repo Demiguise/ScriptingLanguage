@@ -35,19 +35,19 @@ Stack::ShadowResult Stack::CheckForShadows(std::string_view name)
   return ShadowResult::Ok;
 }
 
-Result<TVar> Stack::Create(Type type, std::string_view name)
+Result<TVar> Stack::Create(TType type, std::string_view name)
 {
   if (mFrames.size() == 0)
   {
     return StackError::NoStackFrames;
   }
 
-  if (type.IsVoid())
+  if (type->IsVoid())
   {
     return StackError::CannotAllocateVoid;
   }
 
-  size_t varSize = type.SizeOf();
+  size_t varSize = type->SizeOf();
   if (varSize > (mStack.end() - mNext))
   {
     return StackError::NotEnoughMemory;
@@ -60,7 +60,7 @@ Result<TVar> Stack::Create(Type type, std::string_view name)
     result.AddWarning("An existing variable for this name already exists");
   }
 
-  std::cout << "Creating new [" << type.Name() << ":" << BaseTypeToString(type.Base()) << "]. Name: " << name << std::endl;
+  std::cout << "Creating new [" << type->Name() << ":" << BaseTypeToString(type->Base()) << "]. Name: " << name << std::endl;
   Frame& topFrame = mFrames.back();
 
   TVar newVar = std::make_shared<Variable>(name, type, &(*mNext));

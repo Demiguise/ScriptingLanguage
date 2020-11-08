@@ -86,7 +86,7 @@ Result<TVar> Executor::HandleEquals(std::vector<ASTNode>& children, bool bTopLev
     TTokenPair& identifier = (*iter);
     iter++;
     TTokenPair& typeInfo = (*iter);
-    Type& type = mRegistry.FindType(typeInfo.second.mRaw);
+    TType type = mRegistry.FindType(typeInfo.second.mRaw);
 
     result = mStack.Create(type, identifier.second.mRaw);
   }
@@ -152,7 +152,7 @@ Result<TVar> Executor::HandleAddition(std::vector<ASTNode>& children, bool bTopL
   TTokenPair& RHSIdent = RHS.mTokens.back();
   auto RHSVar = mStack.Get(RHSIdent.second.mRaw);
 
-  Type deducedType;
+  TType deducedType;
   //Attempt to deduce the type used here
   if (LHSVar)
   {
