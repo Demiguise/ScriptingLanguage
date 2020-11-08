@@ -7,8 +7,10 @@
 #include <deque>
 #include <vector>
 #include <optional>
+#include <memory>
 
-using TVarVec = std::vector<Variable>;
+using TVar = std::shared_ptr<Variable>;
+using TVarVec = std::vector<TVar>;
 
 enum class FrameType
 {
@@ -42,9 +44,8 @@ private:
 public:
   Stack(size_t stackSize);
 
-  TError Create(Type type, std::string_view name, Variable& outVar);
-  TError Get(std::string_view name, Variable& outVar);
-  TError Update(std::string_view name, Variable& inVar);
+  Result<TVar> Create(Type type, std::string_view name);
+  Result<TVar> Get(std::string_view name);
 
   void EnterFrame(FrameType type);
   void ExitFrame();

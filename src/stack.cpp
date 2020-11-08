@@ -17,7 +17,7 @@ bool Stack::CheckForShadows(std::string_view name)
   for (auto frame : mFrames)
   {
     auto varIter = std::find_if(frame.mVariables.begin(), frame.mVariables.end(), 
-                  [&](Variable& ele) { return ele.Name() == name; } );
+                  [&](TVar& ele) { return ele->Name() == name; } );
 
     if (varIter != frame.mVariables.end())
     {
@@ -35,7 +35,7 @@ bool Stack::CheckForShadows(std::string_view name)
   return false;
 }
 
-TError Stack::Create(Type type, std::string_view name, Variable& outVar)
+Result<TVar> Stack::Create(Type type, std::string_view name)
 {
   if (mFrames.size() == 0)
   {
@@ -61,14 +61,14 @@ TError Stack::Create(Type type, std::string_view name, Variable& outVar)
   std::cout << "Creating new [" << type.Name() << ":" << BaseTypeToString(type.Base()) << "]. Name: " << name << std::endl;
   Frame& topFrame = mFrames.back();
 
-  outVar = topFrame.mVariables.emplace_back(name, type, &(*mNext));
+  auto newVar = topFrame.mVariables.emplace_back(name, type, &(*mNext));
   mNext += varSize;
   topFrame.mUsedBytes += varSize;
 
-  return StackError::Success;
+  return newVar;
 }
 
-TError Stack::Get(std::string_view name, Variable& outVar)
+Result<TVar> Stack::Get(std::string_view name)
 {
   if (mFrames.size() == 0)
   {
@@ -78,40 +78,11 @@ TError Stack::Get(std::string_view name, Variable& outVar)
   for (auto frame : mFrames)
   {
     auto varIter = std::find_if(frame.mVariables.begin(), frame.mVariables.end(), 
-                  [&](Variable& ele) { return ele.Name() == name; } );
+                  [&](TVar& ele) { return ele->Name() == name; } );
 
     if (varIter != frame.mVariables.end())
     {
-      outVar = *varIter;
-      return StackError::Success;
-    }
-
-    if (frame.mType == FrameType::Function)
-    {
-      //We cannot go further back then THIS function call.
-      return StackError::VariableDoesNotExist;
-    }
-  }
-
-  return StackError::VariableDoesNotExist;
-}
-
-TError Stack::Update(std::string_view name, Variable& inVar)
-{
-  if (mFrames.size() == 0)
-  {
-    return StackError::NoStackFrames;
-  }
-
-  for (auto frame : mFrames)
-  {
-    auto varIter = std::find_if(frame.mVariables.begin(), frame.mVariables.end(), 
-                  [&](Variable& ele) { return ele.Name() == name; } );
-
-    if (varIter != frame.mVariables.end())
-    {
-      *varIter = inVar;
-      return StackError::Success;
+      return *varIter;
     }
 
     if (frame.mType == FrameType::Function)

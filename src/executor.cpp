@@ -75,9 +75,16 @@ TError Executor::HandleEquals(std::vector<ASTNode>& children)
   ASTNode& LHS = children[0];
   TTokenPair& identifier = LHS.mTokens.back();
 
-  Variable stackVar;
-  if (mStack.Get(identifier.second.mRaw, stackVar) == StackError::VariableDoesNotExist)
+  auto result = mStack.Get(identifier.second.mRaw);
+  if (!result)
   {
+    if (result.Error() != StackError::VariableDoesNotExist)
+    {
+      //Push error upwards if we can't handle it
+      //TODO: Make executor use results as well?
+      return result.Error();
+    }
+
     //Try to make it if we can using whatever type information we're given
     if (LHS.mTokens.size() < 2)
     {
@@ -90,19 +97,20 @@ TError Executor::HandleEquals(std::vector<ASTNode>& children)
 
     Type& type = mRegistry.FindType(typeInfo.second.mRaw);
 
-    TError err = mStack.Create(type, identifier.second.mRaw, stackVar);
-    if (err)
+    result = mStack.Create(type, identifier.second.mRaw);
+    if (!result)
     {
-      return err;
+      return result.Error();
     }
   }
 
   //This should be at LEAST a bit of text or an identifier
+  TVar stackVar = *result;
   ASTNode& RHS = children[1];
   TTokenPair& value = RHS.mTokens.front();
-  stackVar.Set(value.second.mRaw);
+  stackVar->Set(value.second.mRaw);
 
-  return mStack.Update(identifier.second.mRaw, stackVar);
+  return ExecutorError::Success;
 }
 
 TError Executor::ProcessTree(ASTNode& tree)

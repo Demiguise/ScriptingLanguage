@@ -4,7 +4,7 @@
 #include <system_error>
 #include <optional>
 
-enum class TokenError
+enum class TokenError 
 {
   Success = 0,
 };
@@ -62,7 +62,8 @@ public:
   Result(TError err)
     : mErr(err) {}
 
-  operator bool() { return mResult; }
+  TError Error() { return mErr; }
+  operator bool() { return mResult.has_value(); }
   T operator*() { return *mResult; }
 };
 
