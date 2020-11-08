@@ -62,18 +62,16 @@ void ASTNode::BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, 
     return;
   }
 
-  ASTNodeType type;
-
   auto iter = std::find_if(begin, end, [&](TTokenPair& element)
   {
     if (IsAnOperator(element.first))
     {
-      type = ASTNodeType::Operator;
+      parent.mType = ASTNodeType::Operator;
       return true;
     }
     else if (IsABuiltin(element.second.mRaw))
     {
-      type = ASTNodeType::Function;
+      parent.mType = ASTNodeType::Function;
       return true;
     }
     else
