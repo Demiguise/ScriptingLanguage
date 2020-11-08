@@ -17,7 +17,10 @@ private:
   Stack mStack;
   TypeRegistry mRegistry;
 
-  TError HandleEquals(std::vector<ASTNode>& children);
+  Result<TVar> HandleEquals(std::vector<ASTNode>& children, bool bTopLevel);
+  Result<TVar> HandleAddition(std::vector<ASTNode>& children, bool bTopLevel);
+
+  Result<TVar> HandleOperator(TTokenPair op, std::vector<ASTNode>& children, bool bTopLevel);
 
   TError HandleTokens(TTokenGroup tokens);
   TError ProcessTree(ASTNode& tree);

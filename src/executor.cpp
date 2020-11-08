@@ -64,7 +64,7 @@ TError Executor::HandleTokens(TTokenGroup tokens)
   return ProcessTree(tree);
 }
 
-TError Executor::HandleEquals(std::vector<ASTNode>& children)
+Result<TVar> Executor::HandleEquals(std::vector<ASTNode>& children, bool bTopLevel)
 {
   /*
     LHS should include at LEAST an identifier at the end
@@ -81,8 +81,7 @@ TError Executor::HandleEquals(std::vector<ASTNode>& children)
     if (result.Error() != StackError::VariableDoesNotExist)
     {
       //Push error upwards if we can't handle it
-      //TODO: Make executor use results as well?
-      return result.Error();
+      return result;
     }
 
     //Try to make it if we can using whatever type information we're given
@@ -100,7 +99,7 @@ TError Executor::HandleEquals(std::vector<ASTNode>& children)
     result = mStack.Create(type, identifier.second.mRaw);
     if (!result)
     {
-      return result.Error();
+      return result;
     }
   }
 
@@ -110,7 +109,16 @@ TError Executor::HandleEquals(std::vector<ASTNode>& children)
   TTokenPair& value = RHS.mTokens.front();
   stackVar->Set(value.second.mRaw);
 
-  return ExecutorError::Success;
+  return stackVar;
+}
+
+Result<TVar> Executor::HandleOperator(TTokenPair op, std::vector<ASTNode>& children, bool bTopLevel)
+{
+    switch (op.first)
+    {
+      case Token::Equals: return HandleEquals(children, bTopLevel).Error();
+      default: return ExecutorError::UnknownOperator;
+    }
 }
 
 TError Executor::ProcessTree(ASTNode& tree)
@@ -125,13 +133,8 @@ TError Executor::ProcessTree(ASTNode& tree)
         return ExecutorError::MismatchedChildrenSize;
       }
 
-      //TODO: 
       TTokenPair& op = tree.mTokens[0];
-      switch (op.first)
-      {
-        case Token::Equals: return HandleEquals(tree.mChildren);
-        default: return ExecutorError::UnknownOperator;
-      }
+      return HandleOperator(op, tree.mChildren, true).Error();
     }
     break;
     case ASTNodeType::Function:

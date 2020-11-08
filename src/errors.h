@@ -69,6 +69,9 @@ public:
   Result(StackError err)
     : mErr(err) {}
 
+  Result(ExecutorError err)
+    : mErr(err) {}
+
   TError Error() { return mErr; }
   operator bool() { return mResult.has_value(); }
   T operator*() { return *mResult; }
