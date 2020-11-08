@@ -130,7 +130,7 @@ Result<TVar> Executor::HandleEquals(std::vector<ASTNode>& children, bool bTopLev
     default:
       {
         TTokenPair& value = RHS.mTokens.front();
-        stackVar->Set(value.second.mRaw);
+        //stackVar->Set(value.second.mRaw);
       }
       break;
   }
@@ -163,24 +163,24 @@ Result<TVar> Executor::HandleAddition(std::vector<ASTNode>& children, bool bTopL
     deducedType = (*RHSVar)->VarType();
   }
 
-  TVar temp = std::make_shared<Variable>("temp", deducedType);
+  TVar temp; // = std::make_shared<Variable>("temp", deducedType);
 
   if (LHSVar)
   {
-    temp->Add(*(*LHSVar));
+    //temp->Add(*(*LHSVar));
   }
   else
   {
-    temp->Add(LHSIdent.second.mRaw);
+    //temp->Add(LHSIdent.second.mRaw);
   }
 
   if (RHSVar)
   {
-    temp->Add(*(*RHSVar));
+    //temp->Add(*(*RHSVar));
   }
   else
   {
-    temp->Add(RHSIdent.second.mRaw);
+    //temp->Add(RHSIdent.second.mRaw);
   }
 
   return temp;
