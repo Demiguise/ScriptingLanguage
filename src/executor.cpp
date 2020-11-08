@@ -72,39 +72,44 @@ Result<TVar> Executor::HandleEquals(std::vector<ASTNode>& children, bool bTopLev
     identifer = x;
     namespace::type identifier = x;
   */
+
+  TVar stackVar;
+  Result<TVar> result;
+
   ASTNode& LHS = children[0];
-  TTokenPair& identifier = LHS.mTokens.back();
 
-  auto result = mStack.Get(identifier.second.mRaw);
-  if (!result)
+  if (LHS.mTokens.size() > 1)
   {
-    if (result.Error() != StackError::VariableDoesNotExist)
-    {
-      //Push error upwards if we can't handle it
-      return result;
-    }
+    //Should contain some kind of type information
+    auto iter = LHS.mTokens.rbegin();
 
-    //Try to make it if we can using whatever type information we're given
-    if (LHS.mTokens.size() < 2)
-    {
-      //Can't do anything here, there's no type information
-      return ExecutorError::Temp;
-    }
-
-    //I know this might break when we get to composite types (namespace::type)
-    TTokenPair& typeInfo = LHS.mTokens.front();
-
+    TTokenPair& identifier = (*iter);
+    iter++;
+    TTokenPair& typeInfo = (*iter);
     Type& type = mRegistry.FindType(typeInfo.second.mRaw);
 
     result = mStack.Create(type, identifier.second.mRaw);
-    if (!result)
-    {
-      return result;
-    }
+  }
+  else if (LHS.mTokens.size() == 1)
+  {
+    //Should just be an identifier
+    TTokenPair& identifier = LHS.mTokens.back();
+    result = mStack.Get(identifier.second.mRaw);
+  }
+  else
+  {
+    //Nothing to do
+    return ExecutorError::Temp;
   }
 
+  if (!result)
+  {
+    return result;
+  }
+
+  stackVar = *result;
+
   //This should be at LEAST a bit of text or an identifier
-  TVar stackVar = *result;
   ASTNode& RHS = children[1];
   switch (RHS.mType)
   {
