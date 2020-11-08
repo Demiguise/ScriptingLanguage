@@ -97,6 +97,6 @@ void ASTNode::BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, 
 
   ASTNode rhs;
   rhs.mTokens.assign(iter, end);
-  BuildTree(iter, end, lhs);
+  BuildTree(iter, end, rhs);
   parent.mChildren.push_back(rhs);
 }
