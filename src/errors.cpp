@@ -49,8 +49,8 @@ namespace
       {
         case StackError::NoStackFrames:
           return "No stack frames are currently in use";
-        case StackError::CannotAllocateNull:
-          return "Cannot allocate memory on the stack for a NULL base type";
+        case StackError::CannotAllocateVoid:
+          return "Cannot allocate memory on the stack for a Void base type";
         case StackError::NotEnoughMemory:
           return "Cannot allocate enough memory for new variable";
         case StackError::VariableDoesNotExist:

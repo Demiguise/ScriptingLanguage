@@ -42,9 +42,9 @@ Result<TVar> Stack::Create(Type type, std::string_view name)
     return StackError::NoStackFrames;
   }
 
-  if (type.IsNull())
+  if (type.IsVoid())
   {
-    return StackError::CannotAllocateNull;
+    return StackError::CannotAllocateVoid;
   }
 
   size_t varSize = type.SizeOf();
