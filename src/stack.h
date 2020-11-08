@@ -30,6 +30,12 @@ private:
       , mUsedBytes(0) {}
   };
 
+  enum class ShadowResult
+  {
+    Ok,
+    Exists,
+  };
+
   using TFrame = std::deque<Frame>;
   using TStack = std::vector<unsigned char>;
 
@@ -37,7 +43,7 @@ private:
   TStack mStack;
   TStack::iterator mNext;
 
-  bool CheckForShadows(std::string_view name);
+  ShadowResult CheckForShadows(std::string_view name);
 
 public:
   Stack(size_t stackSize);

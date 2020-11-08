@@ -12,7 +12,7 @@ Stack::Stack(size_t stackSize)
 
 //False on no shadows existing
 //Shadows being other variables named the same thing.
-bool Stack::CheckForShadows(std::string_view name)
+Stack::ShadowResult Stack::CheckForShadows(std::string_view name)
 {
   for (auto frame : mFrames)
   {
@@ -22,17 +22,17 @@ bool Stack::CheckForShadows(std::string_view name)
     if (varIter != frame.mVariables.end())
     {
       //A shadow exists
-      return true;
+      return ShadowResult::Exists;
     }
 
     if (frame.mType == FrameType::Function)
     {
       //We cannot go further back then THIS function call.
-      return false;
+      return ShadowResult::Ok;
     }
   }
 
-  return false;
+  return ShadowResult::Ok;
 }
 
 Result<TVar> Stack::Create(Type type, std::string_view name)
@@ -55,7 +55,7 @@ Result<TVar> Stack::Create(Type type, std::string_view name)
 
   Result<TVar> result;
 
-  if (CheckForShadows(name))
+  if (CheckForShadows(name) == ShadowResult::Exists)
   {
     result.AddWarning("An existing variable for this name already exists");
   }
