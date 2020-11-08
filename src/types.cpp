@@ -49,6 +49,20 @@ TypeRegistry::TypeRegistry()
   };
 }
 
+void TypeRegistry::RegisterTypedef(BaseType base, std::string_view name)
+{
+  Type& existingType = FindType(name);
+  if (!existingType.IsNull())
+  {
+    //TODO: Bubble up an error here since the type already exists
+    return;
+  }
+
+  //Put the new type into the registry
+  std::string typeName(name);
+  mRegistry[typeName] = { base, typeName };
+}
+
 Type& TypeRegistry::FindType(std::string_view name)
 {
   std::string typeName(name);
