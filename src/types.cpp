@@ -37,3 +37,10 @@ size_t Type::SizeOf()
       return UINT32_MAX;
   }
 }
+
+Type& TypeRegistry::FindType(std::string_view name)
+{
+  //Forced int for now
+  static Type intType{ BaseType::Int, "Int" };
+  return intType;
+}

@@ -43,7 +43,7 @@ public:
   TypeRegistry() = default;
 
   void RegisterTypedef(BaseType base, std::string name);
-  Type& FindType(std::string name);
+  Type& FindType(std::string_view name);
 };
 
 #endif //~__TYPES_H__
