@@ -48,7 +48,7 @@ private:
 public:
   Stack(size_t stackSize);
 
-  Result<TVar> Create(Type type, std::string_view name);
+  Result<TVar> Create(TType type, std::string_view name);
   Result<TVar> Get(std::string_view name);
 
   void EnterFrame(FrameType type);

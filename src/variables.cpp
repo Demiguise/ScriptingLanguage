@@ -9,25 +9,25 @@ Variable::Variable()
 {
 }
 
-Variable::Variable(std::string_view name, Type type)
+Variable::Variable(std::string_view name, TType type)
   : mName(name)
   , mType(type)
 {
-  mInternal.resize(type.SizeOf());
+  mInternal.resize(type->SizeOf());
   mData = &(mInternal.front());
-  if (mType.Base() == BaseType::String)
+  if (mType->Base() == BaseType::String)
   {
     //Construct this string on the stack space allocated to us
     new(mData) std::string();
   }
 }
 
-Variable::Variable(std::string_view name, Type type, Byte* pDataBlock)
+Variable::Variable(std::string_view name, TType type, Byte* pDataBlock)
   : mName(name)
   , mType(type)
   , mData(pDataBlock)
 {
-  if (mType.Base() == BaseType::String)
+  if (mType->Base() == BaseType::String)
   {
     //Construct this string on the stack space allocated to us
     new(pDataBlock) std::string();
@@ -36,7 +36,7 @@ Variable::Variable(std::string_view name, Type type, Byte* pDataBlock)
 
 Variable::~Variable()
 {
-  if (mType.Base() == BaseType::String)
+  if (mType->Base() == BaseType::String)
   {
     //Explicitly call the destructor of the string
     std::string* pStr = (std::string*)mData;
@@ -54,7 +54,7 @@ bool Variable::Set(const std::string_view& rhs)
     How would a variable store them?
   */
   std::string arg(rhs);
-  switch (mType.Base())
+  switch (mType->Base())
   {
     case BaseType::Void:
     {
@@ -126,7 +126,7 @@ bool Variable::Set(const Variable& rhs)
     How should the types be structued? With templates of an enum type?
     How would a variable store them?
   */
-  switch (mType.Base())
+  switch (mType->Base())
   {
     case BaseType::Void:
     {
@@ -180,7 +180,7 @@ bool Variable::Set(const Variable& rhs)
 bool Variable::Add(const std::string_view& rhs)
 {
   std::string arg(rhs);
-  switch (mType.Base())
+  switch (mType->Base())
   {
     case BaseType::Void:
     {
@@ -232,7 +232,7 @@ bool Variable::Add(const std::string_view& rhs)
 
 bool Variable::Add(const Variable& rhs)
 {
-  switch (mType.Base())
+  switch (mType->Base())
   {
     case BaseType::Void:
     {
