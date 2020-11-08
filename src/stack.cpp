@@ -63,7 +63,7 @@ Result<TVar> Stack::Create(TType type, std::string_view name)
   std::cout << "Creating new [" << type->Name() << ":" << BaseTypeToString(type->Base()) << "]. Name: " << name << std::endl;
   Frame& topFrame = mFrames.back();
 
-  TVar newVar = std::make_shared<Variable>(name, type, &(*mNext));
+  TVar newVar = Variable::Create(name, type, &(*mNext));
   topFrame.mVariables.push_back(newVar);
   mNext += varSize;
   topFrame.mUsedBytes += varSize;
