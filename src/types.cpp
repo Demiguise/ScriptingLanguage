@@ -34,13 +34,29 @@ size_t Type::SizeOf()
 
     case BaseType::Null: 
     default:
-      return UINT32_MAX;
+      return UINT32_MAX; //This is huge on purpose to TRY and catch errors.
   }
+}
+
+TypeRegistry::TypeRegistry()
+{
+  //Initialize our base types
+  mRegistry = {
+    { "int" , { BaseType::Int, "int" }},
+    { "bool" , { BaseType::Bool, "bool" }},
+    { "string" , { BaseType::String, "string" }},
+    { "float" , { BaseType::Float, "float" }}
+  };
 }
 
 Type& TypeRegistry::FindType(std::string_view name)
 {
-  //Forced int for now
-  static Type intType{ BaseType::Int, "Int" };
-  return intType;
+  std::string typeName(name);
+  auto iter = mRegistry.find(typeName);
+  if (iter == mRegistry.end())
+  {
+    return Type::Null;
+  }
+
+  return iter->second;
 }

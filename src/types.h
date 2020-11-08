@@ -5,7 +5,7 @@
 #include <string>
 #include <unordered_map>
 
-//Temporary while we are dealing with JUST POD types
+//All other types in our language are defined from these POD types.
 enum class BaseType
 {
   Null,
@@ -40,9 +40,9 @@ private:
   TRegistry mRegistry;
 
 public:
-  TypeRegistry() = default;
+  TypeRegistry();
 
-  void RegisterTypedef(BaseType base, std::string name);
+  void RegisterTypedef(BaseType base, std::string_view name);
   Type& FindType(std::string_view name);
 };
 
