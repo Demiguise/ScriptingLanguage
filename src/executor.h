@@ -15,13 +15,17 @@ class Executor
 private:
   Tokeniser mTokeniser;
   Stack mStack;
+  TypeRegistry mRegistry;
 
-  bool HandleTokens(TTokenGroup tokens);
+  TError HandleEquals(std::vector<ASTNode>& children);
+
+  TError HandleTokens(TTokenGroup tokens);
+  TError ProcessTree(ASTNode& tree);
 
 public:
   Executor(std::string scriptPath);
   
-  bool Execute();
+  TError Execute();
 };
 
 #endif //~__EXECUTOR_H__
