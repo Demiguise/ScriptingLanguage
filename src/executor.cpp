@@ -106,17 +106,87 @@ Result<TVar> Executor::HandleEquals(std::vector<ASTNode>& children, bool bTopLev
   //This should be at LEAST a bit of text or an identifier
   TVar stackVar = *result;
   ASTNode& RHS = children[1];
-  TTokenPair& value = RHS.mTokens.front();
-  stackVar->Set(value.second.mRaw);
+  switch (RHS.mType)
+  {
+    case ASTNodeType::Operator:
+      {
+        TTokenPair& op = RHS.mTokens.back();
+        auto temp = HandleOperator(op, RHS.mChildren, false);
+        if (!temp)
+        {
+          return temp;
+        }
+
+        //TODO: Evaluate whether to have different functiosn for add/subtract/etc.
+        TVar var = *temp;
+        stackVar->Set(*var);
+      }
+      break;
+    default:
+      {
+        TTokenPair& value = RHS.mTokens.front();
+        stackVar->Set(value.second.mRaw);
+      }
+      break;
+  }
 
   return stackVar;
+}
+
+Result<TVar> Executor::HandleAddition(std::vector<ASTNode>& children, bool bTopLevel)
+{
+  /*
+    LHS should be an identifier for a stack variable, or a literal.
+    RHS should be an identifier for a stack variable, or a literal.
+  */
+  ASTNode& LHS = children[0];
+  TTokenPair& LHSIdent = LHS.mTokens.back();
+  auto LHSVar = mStack.Get(LHSIdent.second.mRaw);
+
+  ASTNode& RHS = children[1];
+  TTokenPair& RHSIdent = RHS.mTokens.back();
+  auto RHSVar = mStack.Get(RHSIdent.second.mRaw);
+
+  Type deducedType;
+  //Attempt to deduce the type used here
+  if (LHSVar)
+  {
+    deducedType = (*LHSVar)->VarType();
+  }
+  else if (RHSVar)
+  {
+    deducedType = (*RHSVar)->VarType();
+  }
+
+  TVar temp = std::make_shared<Variable>("temp", deducedType);
+
+  if (LHSVar)
+  {
+    temp->Add(*(*LHSVar));
+  }
+  else
+  {
+    temp->Add(LHSIdent.second.mRaw);
+  }
+
+  if (RHSVar)
+  {
+    temp->Add(*(*RHSVar));
+  }
+  else
+  {
+    temp->Add(RHSIdent.second.mRaw);
+  }
+
+  return temp;
 }
 
 Result<TVar> Executor::HandleOperator(TTokenPair op, std::vector<ASTNode>& children, bool bTopLevel)
 {
     switch (op.first)
     {
-      case Token::Equals: return HandleEquals(children, bTopLevel).Error();
+      case Token::Equals: return HandleEquals(children, bTopLevel);
+      case Token::Addition: return HandleAddition(children, bTopLevel);
       default: return ExecutorError::UnknownOperator;
     }
 }

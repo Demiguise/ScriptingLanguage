@@ -9,6 +9,19 @@ Variable::Variable()
 {
 }
 
+Variable::Variable(std::string_view name, Type type)
+  : mName(name)
+  , mType(type)
+{
+  mInternal.resize(type.SizeOf());
+  mData = &(mInternal.front());
+  if (mType.Base() == BaseType::String)
+  {
+    //Construct this string on the stack space allocated to us
+    new(mData) std::string();
+  }
+}
+
 Variable::Variable(std::string_view name, Type type, Byte* pDataBlock)
   : mName(name)
   , mType(type)
@@ -104,6 +117,66 @@ bool Variable::Set(const std::string_view& rhs)
   }
 }
 
+bool Variable::Set(const Variable& rhs)
+{
+  /*
+    This feels foul at the moment, but I'm sure we can make it better.
+    Should the variable hold the data? Or should the type?
+    If it's the latter, what does the variable do?
+    How should the types be structued? With templates of an enum type?
+    How would a variable store them?
+  */
+  switch (mType.Base())
+  {
+    case BaseType::Null:
+    {
+      return false;
+    }
+    case BaseType::Int:
+    {
+      try
+      {
+        *(int*)mData = *(int*)rhs.mData;
+        return true;
+      }
+      catch (const std::invalid_argument& e)
+      {
+        return false;
+      }
+      catch (const std::out_of_range& e)
+      {
+        return false;
+      }
+    }
+    case BaseType::Bool:
+    {
+      *(bool*)mData = *(bool*)rhs.mData;
+      return true;
+    }
+    case BaseType::String:
+    {
+      *(std::string*)mData = *(std::string*)rhs.mData;
+      return true;
+    }
+    case BaseType::Float:
+    {
+      try
+      {
+        *(float*)mData = *(float*)rhs.mData;
+        return true;
+      }
+      catch (const std::invalid_argument& e)
+      {
+        return false;
+      }
+      catch (const std::out_of_range& e)
+      {
+        return false;
+      }
+    }
+  }
+}
+
 bool Variable::Add(const std::string_view& rhs)
 {
   std::string arg(rhs);
@@ -143,6 +216,58 @@ bool Variable::Add(const std::string_view& rhs)
       try
       {
         *(float*)mData += std::stof(arg);
+        return true;
+      }
+      catch (const std::invalid_argument& e)
+      {
+        return false;
+      }
+      catch (const std::out_of_range& e)
+      {
+        return false;
+      }
+    }
+  }
+}
+
+bool Variable::Add(const Variable& rhs)
+{
+  switch (mType.Base())
+  {
+    case BaseType::Null:
+    {
+      return false;
+    }
+    case BaseType::Int:
+    {
+      try
+      {
+        *(int*)mData += *(int*)rhs.mData;
+        return true;
+      }
+      catch (const std::invalid_argument& e)
+      {
+        return false;
+      }
+      catch (const std::out_of_range& e)
+      {
+        return false;
+      }
+    }
+    case BaseType::Bool:
+    {
+      return false;
+    }
+    case BaseType::String:
+    {
+      *(std::string*)mData += *(std::string*)rhs.mData;
+      return true;
+    }
+    case BaseType::Float:
+    {
+      try
+      {
+        *(float*)mData += *(float*)rhs.mData;
         return true;
       }
       catch (const std::invalid_argument& e)

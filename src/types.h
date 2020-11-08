@@ -23,6 +23,7 @@ private:
   std::string mName;
 
 public:
+  Type() = default;
   Type(BaseType base, std::string typeName);
 
   BaseType Base() { return mBase; }
