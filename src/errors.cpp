@@ -84,22 +84,22 @@ namespace
   const ExecutorErrorCategory executorErrorCategory;
 }
 
-std::error_code make_error_code(TokenError err)
+TError make_error_code(TokenError err)
 {
   return {static_cast<int>(err), tokenErrorCategory};
 }
 
-std::error_code make_error_code(VariableError err)
+TError make_error_code(VariableError err)
 {
   return {static_cast<int>(err), variableErrorCategory};
 }
 
-std::error_code make_error_code(StackError err)
+TError make_error_code(StackError err)
 {
   return {static_cast<int>(err), stackErrorCategory};
 }
 
-std::error_code make_error_code(ExecutorError err)
+TError make_error_code(ExecutorError err)
 {
   return {static_cast<int>(err), executorErrorCategory};
 }

@@ -43,12 +43,12 @@ namespace std
     struct is_error_code_enum<ExecutorError> : true_type {};
 }
 
-std::error_code make_error_code(TokenError);
-std::error_code make_error_code(VariableError);
-std::error_code make_error_code(StackError);
-std::error_code make_error_code(ExecutorError);
-
 using TError = std::error_code;
+
+TError make_error_code(TokenError);
+TError make_error_code(VariableError);
+TError make_error_code(StackError);
+TError make_error_code(ExecutorError);
 
 template<typename T>
 class Result
@@ -60,6 +60,13 @@ public:
   Result(T data)
     : mResult(data) {}
   Result(TError err)
+    : mErr(err) {}
+
+  /*
+    We SHOULD be able to implicitly convert from StackError to std::error
+    but I can't figured out why/how it's not working atm.
+  */
+  Result(StackError err)
     : mErr(err) {}
 
   TError Error() { return mErr; }
