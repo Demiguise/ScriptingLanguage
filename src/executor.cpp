@@ -228,7 +228,7 @@ TError Executor::Execute()
   std::string raw_statement = "";
   TTokenGroup tokens;
 
-  mStack.EnterFrame(FrameType::Function);
+  mStack.EnterFrame(Stack::FrameType::Function);
 
   while (!mTokeniser.Parse(raw_statement, tokens).has_value())
   {
