@@ -14,7 +14,8 @@ enum class TokenError
 enum class VariableError
 {
   Success = 0,
-  CannotConvert
+  CannotConvert,
+  OperationNotImplemented
 };
 
 enum class StackError

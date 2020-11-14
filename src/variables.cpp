@@ -160,7 +160,8 @@ public:
 
   virtual Result<bool> Add(const TVar& rhs) override 
   {
-    return false;
+    std::string errMessage = Util::Format("No Add operator implemented for [%s]", BaseTypeToString(mType->Base()).c_str());
+    return { VariableError::OperationNotImplemented, errMessage };
   }
 };
 
