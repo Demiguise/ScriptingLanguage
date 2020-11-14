@@ -12,10 +12,17 @@
 class Variable;
 using TVar = std::shared_ptr<Variable>;
 
+//Foward decl of template implementation
+template<class T, T t>
+class Variable_Impl;
+
 //A variable comprises a type, some data, and a name
 class Variable
 {
-private:
+protected:
+  template<class T, T t>
+  friend class Variable_Impl;
+
   std::string mName;
   TType mType;
   Byte* mData;
@@ -24,9 +31,8 @@ private:
   std::vector<Byte> mInternal;
 
   Variable();
-  Variable(std::string_view name, TType type);
   Variable(std::string_view name, TType type, Byte* pDataBlock);
-  ~Variable();
+  virtual ~Variable();
 
 public:
 
