@@ -113,22 +113,36 @@ Result<bool> Variable_Impl<BaseType, BaseType::Int>::Set(const TVar& rhs)
 template<>
 Result<bool> Variable_Impl<BaseType, BaseType::Int>::Set(const std::string_view& data)
 {
+  Result<bool> result;
   std::string arg(data);
+
+  if (arg.find(".") == std::string::npos)
+  {
+    result.AddWarning(Util::Format("(%s) contains an '.' and may lose data when converted", arg.c_str()));
+  }
+
+  if (arg.find(",") == std::string::npos)
+  {
+    result.AddWarning(Util::Format("(%s) contains an ',' and may lose data when converted", arg.c_str()));
+  }
+
   try
   {
     *(int *)mData = std::stoi(arg);
-    return true;
+    result.SetResult(true);
   }
   catch (const std::invalid_argument &e)
   {
     std::string errMessage = Util::Format("Cannot use (%s) as type [%s][Invalid_Argument]", arg.c_str(), BaseTypeToString(mType->Base()).c_str());
-    return { VariableError::CannotConvert, errMessage };
+    result.SetError({ VariableError::CannotConvert, errMessage });
   }
   catch (const std::out_of_range &e)
   {
     std::string errMessage = Util::Format("Cannot use (%s) as type [%s][Out_Of_Range]", arg.c_str(), BaseTypeToString(mType->Base()).c_str());
-    return { VariableError::CannotConvert, errMessage };
+    result.SetError({ VariableError::CannotConvert, errMessage });
   }
+
+  return result;
 }
 
 template<>
@@ -359,5 +373,57 @@ TEST_CASE("Variable::Create", "[Variables]")
 
   REQUIRE(Variable::Create("test", nullptr) == nullptr);
   REQUIRE(Variable::Create("test", Type::Void) == nullptr);
+}
+
+TEST_CASE("Variable::Int::Set", "[Variables]")
+{
+  TypeRegistry registry;
+  TType type = registry.FindType("int");
+
+  std::string varName = "test-int";
+  std::vector<Byte> fakeStack;
+  fakeStack.resize(type->SizeOf());
+  int* pData = (int*)fakeStack.data();
+
+  TVar lhs = Variable::Create(varName, type, fakeStack.data());
+
+  //Basic check to make sure variable names, types,
+  //and default initialisation are as expected.
+  REQUIRE(lhs->Name() == varName);
+  REQUIRE(lhs->VarType()->Base() == BaseType::Int);
+  REQUIRE(*pData == 0);
+
+  //Verify ints are set as expected based on string arguments
+  Result<bool> testResult;
+
+  testResult = lhs->Set("1");
+  REQUIRE(testResult);
+  REQUIRE(*pData == 1);
+
+  testResult = lhs->Set("2147483647");
+  REQUIRE(testResult);
+  REQUIRE(*pData == 2147483647);
+
+  testResult = lhs->Set("-2147483648");
+  REQUIRE(testResult);
+  REQUIRE(*pData == -2147483648);
+
+  //Verify some values can be converted, but generate a warning
+  testResult = lhs->Set("512.12345");
+  REQUIRE(testResult);
+  REQUIRE(testResult.Warnings().size() != 0);
+  REQUIRE(*pData == 512);
+
+  testResult = lhs->Set("1,234,567");
+  REQUIRE(testResult);
+  REQUIRE(testResult.Warnings().size() != 0);
+  REQUIRE(*pData == 1);
+
+  //Verify we can't set int to invalid values
+  testResult = lhs->Set("-9999999999");
+  REQUIRE(!testResult);
+
+  testResult = lhs->Set("muffins");
+  REQUIRE(!testResult);
 }
 #endif

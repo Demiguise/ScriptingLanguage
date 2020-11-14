@@ -102,7 +102,7 @@ public:
   std::vector<std::string>& Warnings() { return mWarnings; }
   void AddWarning(std::string warning) { mWarnings.push_back(warning); }
 
-  operator bool() { return mResult.has_value(); }
+  operator bool() const { return mResult.has_value(); }
   T operator*() { return *mResult; }
 };
 
