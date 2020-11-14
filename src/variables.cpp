@@ -340,3 +340,19 @@ TVar Variable::Create(std::string_view name, TType type, Byte* pDataBlock /*= nu
 
   return result;
 }
+
+#ifdef USE_UNIT_TESTS
+#include <catch2/catch.hpp>
+TEST_CASE("Variable::Create", "[Variables]")
+{
+  TypeRegistry registry;
+
+  REQUIRE(Variable::Create("test", registry.FindType("int")) != nullptr);
+  REQUIRE(Variable::Create("test", registry.FindType("bool")) != nullptr);
+  REQUIRE(Variable::Create("test", registry.FindType("string")) != nullptr);
+  REQUIRE(Variable::Create("test", registry.FindType("float")) != nullptr);
+
+  REQUIRE(Variable::Create("test", nullptr) == nullptr);
+  REQUIRE(Variable::Create("test", Type::Void) == nullptr);
+}
+#endif
