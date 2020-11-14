@@ -47,6 +47,9 @@ if (USE_UNIT_TESTS)
   list(APPEND Common_Defines
     USE_UNIT_TESTS
   )
+  list(APPEND SRCS 
+    catch2_harness.cpp
+  )
 else()
   message(STATUS "Building for manual harness")
   list(APPEND SRCS 

@@ -8,8 +8,7 @@
 #include <algorithm>
 
 #ifdef USE_UNIT_TESTS
-#define CATCH_CONFIG_MAIN
-#include "Catch2/catch.hpp"
+#include "catch2/catch.hpp"
 #endif
 
 /*
@@ -292,3 +291,9 @@ TError Executor::Execute()
   return ExecutorError::Success;
 }
 
+#ifdef USE_UNIT_TESTS
+TEST_CASE("TestME", "[base]")
+{
+  REQUIRE(1 == 1);
+}
+#endif
