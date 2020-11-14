@@ -163,7 +163,11 @@ Result<TVar> Executor::HandleAddition(std::vector<ASTNode>& children, bool bTopL
     deducedType = (*RHSVar)->VarType();
   }
 
-  TVar temp; // = std::make_shared<Variable>("temp", deducedType);
+  //TODO: Better type deduction
+  if (deducedType == nullptr)
+  {
+    deducedType = mRegistry.FindType("int");
+  }
 
   if (LHSVar)
   {
@@ -209,7 +213,7 @@ TError Executor::ProcessTree(ASTNode& tree)
       }
 
       TTokenPair& op = tree.mTokens[0];
-      return HandleOperator(op, tree.mChildren, true).Error();
+      return HandleOperator(op, tree.mChildren, true).ErrorCode();
     }
     break;
     case ASTNodeType::Function:
