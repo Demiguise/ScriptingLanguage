@@ -23,7 +23,7 @@ Variable::Variable(std::string_view name, TType type, Byte* pDataBlock)
   if (mType->Base() == BaseType::String)
   {
     //Construct this string on the stack space allocated to us
-    new(pDataBlock) std::string();
+    new(mData) std::string();
   }
 }
 
@@ -328,6 +328,11 @@ Result<bool> Variable_Impl<BaseType, BaseType::Float>::Add(const TVar& rhs)
 
 TVar Variable::Create(std::string_view name, TType type, Byte* pDataBlock /*= nullptr*/)
 {
+  if (!type)
+  {
+    return nullptr;
+  }
+
   TVar result;
   switch (type->Base())
   {
