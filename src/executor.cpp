@@ -7,6 +7,11 @@
 #include <vector>
 #include <algorithm>
 
+#ifdef USE_UNIT_TESTS
+#define CATCH_CONFIG_MAIN
+#include "Catch2/catch.hpp"
+#endif
+
 /*
 [
   IsAType(token) : [

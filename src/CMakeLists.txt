@@ -40,32 +40,52 @@ set(Debug_Options
 set(Libs
 )
 
+option(USE_UNIT_TESTS "Whether to use Catch2 Tests" On)
+
+if (USE_UNIT_TESTS)
+  message(STATUS "Building for unit tests")
+  list(APPEND Common_Defines
+    USE_UNIT_TESTS
+  )
+else()
+  message(STATUS "Building for manual harness")
+  list(APPEND SRCS 
+    win32_harness.cpp
+  )
+endif()
+
 #Test executable (To be removed once we're closer to finishing)
-add_executable(TEST_HARNESS
+add_executable(TESTS
   ${SRCS}
-  win32_harness.cpp
 )
 
-set_target_properties(TEST_HARNESS PROPERTIES
+set_target_properties(TESTS PROPERTIES
   OUTPUT_NAME "test_harness"
   RUNTIME_OUTPUT_DIRECTORY "${PROJECT_SOURCE_DIR}/bin"
 )
 
-target_include_directories(TEST_HARNESS
+target_include_directories(TESTS
   PUBLIC
     ${PROJECT_SOURCE_DIR}/include
   PRIVATE
     ${PROJECT_SOURCE_DIR}/src
 )
 
-target_compile_definitions(TEST_HARNESS
+target_compile_definitions(TESTS
   PRIVATE
     ${Common_Defines}
     $<$<CONFIG:DEBUG>:${Debug_Defines}>
 )
 
-target_compile_options(TEST_HARNESS
+target_compile_options(TESTS
   PRIVATE
     ${Common_Options}
     $<$<CONFIG:DEBUG>:${Debug_Options}>
 )
+
+if (USE_UNIT_TESTS)
+  target_link_libraries(TESTS
+    PRIVATE
+      Catch2::Catch2
+  )
+endif()

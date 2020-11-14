@@ -7,4 +7,6 @@ set_property(CACHE Target_Platform PROPERTY STRINGS x64 Linux)
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 set(CMAKE_CXX_STANDARD 17)
 
+find_package(Catch2 REQUIRED)
+
 add_subdirectory(src)
