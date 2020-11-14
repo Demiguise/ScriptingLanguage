@@ -422,8 +422,10 @@ TEST_CASE("Variable::Int::Set", "[Variables]")
   //Verify we can't set int to invalid values
   testResult = lhs->Set("-9999999999");
   REQUIRE(!testResult);
+  REQUIRE(testResult.Error().mMessage != "");
 
   testResult = lhs->Set("muffins");
   REQUIRE(!testResult);
+  REQUIRE(testResult.Error().mMessage != "");
 }
 #endif
