@@ -14,6 +14,7 @@ enum class TokenError
 enum class VariableError
 {
   Success = 0,
+  CannotConvert
 };
 
 enum class StackError
@@ -55,32 +56,46 @@ TError make_error_code(ExecutorError);
 template<typename T>
 class Result
 {
+  struct ErrorPair
+  {
+    TError mCode;
+    std::string mMessage;
+  } mErr;
+
   std::optional<T> mResult;
-  TError mErr;
+  std::string mMessage;
   std::vector<std::string> mWarnings;
 
 public:
   Result() = default;
   Result(T data)
     : mResult(data) {}
-  Result(TError err)
-    : mErr(err) {}
+  Result(TError err, std::string message = "")
+    : mErr({err, message}) {}
 
   /*
     We SHOULD be able to implicitly convert from StackError to std::error
     but I can't figured out why/how it's not working atm.
   */
-  Result(StackError err)
-    : mErr(err) {}
+  Result(StackError err, std::string message = "")
+    : mErr({err, message}) {}
 
-  Result(ExecutorError err)
-    : mErr(err) {}
+  Result(ExecutorError err, std::string message = "")
+    : mErr({err, message}) {}
+
+  Result(VariableError err, std::string message = "")
+    : mErr({err, message}) {}
 
   void SetResult(T data) { mResult = data; }
   void ClearResult() { mResult.reset(); }
 
-  TError Error() { return mErr; }
-  void SetError(TError err) { mErr = err; }
+  TError ErrorCode() { return mErr.mCode; }
+  std::string ErrorMessage() { return mErr.mMessage; }
+  void SetError(TError err, std::string message = "") 
+  { 
+    mErr.mCode = err; 
+    mErr.mMessage = message;
+  }
 
   std::vector<std::string>& Warnings() { return mWarnings; }
   void AddWarning(std::string warning) { mWarnings.push_back(warning); }
