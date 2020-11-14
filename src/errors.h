@@ -63,7 +63,6 @@ class Result
   } mErr;
 
   std::optional<T> mResult;
-  std::string mMessage;
   std::vector<std::string> mWarnings;
 
 public:
