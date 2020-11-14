@@ -160,6 +160,8 @@ TVar Variable::Create(std::string_view name, TType type, Byte* pDataBlock /*= nu
   {
     case BaseType::Int: result = std::make_shared<Variable_Impl<BaseType, BaseType::Int>>(name, type, pDataBlock); break;
     case BaseType::Bool: result = std::make_shared<Variable_Impl<BaseType, BaseType::Bool>>(name, type, pDataBlock); break;
+    case BaseType::String: result = std::make_shared<Variable_Impl<BaseType, BaseType::String>>(name, type, pDataBlock); break;
+    case BaseType::Float: result = std::make_shared<Variable_Impl<BaseType, BaseType::Float>>(name, type, pDataBlock); break;
     default: result = nullptr; break;
   }
 
