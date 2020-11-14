@@ -178,7 +178,11 @@ Result<TVar> Executor::HandleAddition(std::vector<ASTNode>& children, bool bTopL
   if (!LHSResult)
   {
     LHSVar = Variable::Create("Addition-LHS", deducedType);
-    LHSVar->Set(LHSIdent.second.mRaw);
+    auto result = LHSVar->Set(LHSIdent.second.mRaw);
+    if (!result)
+    {
+      return result.Error();
+    }
   }
   else
   {
@@ -190,7 +194,11 @@ Result<TVar> Executor::HandleAddition(std::vector<ASTNode>& children, bool bTopL
   if (!RHSResult)
   {
     RHSVar = Variable::Create("Addition-RHS", deducedType);
-    RHSVar->Set(RHSIdent.second.mRaw);
+    auto result = RHSVar->Set(RHSIdent.second.mRaw);
+    if (!result)
+    {
+      return result.Error();
+    }
   }
   else
   {
