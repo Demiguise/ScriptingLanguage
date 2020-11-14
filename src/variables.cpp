@@ -190,7 +190,8 @@ namespace Convert
 template<>
 Result<bool> Variable_Impl<BaseType, BaseType::Int>::Add(const TVar& rhs)
 {
-  switch (rhs->mType->Base())
+  BaseType type = rhs->mType->Base();
+  switch (type)
   {
     case BaseType::Int:
     {
@@ -202,8 +203,9 @@ Result<bool> Variable_Impl<BaseType, BaseType::Int>::Add(const TVar& rhs)
     }
     default: 
     {
-      //TODO: Write error here
-      return false;
+      std::string errMessage = Util::Format("Cannot convert [%s] to type [%s]", BaseTypeToString(type).c_str(), BaseTypeToString(mType->Base()).c_str());
+
+      return { VariableError::CannotConvert, errMessage };
     }
   }
 }
@@ -214,6 +216,7 @@ TVar Variable::Create(std::string_view name, TType type, Byte* pDataBlock /*= nu
   switch (type->Base())
   {
     case BaseType::Int: result = std::make_shared<Variable_Impl<BaseType, BaseType::Int>>(name, type, pDataBlock); break;
+    case BaseType::Bool: result = std::make_shared<Variable_Impl<BaseType, BaseType::Bool>>(name, type, pDataBlock); break;
     default: result = nullptr; break;
   }
 
