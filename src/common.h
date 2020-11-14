@@ -5,4 +5,9 @@
 
 using Byte = unsigned char;
 
+namespace Util
+{
+    std::string Format(const char* frmt, ...);
+}
+
 #endif //~__COMMON_H__
