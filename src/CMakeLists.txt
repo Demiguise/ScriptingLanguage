@@ -19,6 +19,9 @@ set(SRCS
 
   errors.h
   errors.cpp
+
+  common.cpp
+  common.h
 )
 
 set(Common_Defines
