@@ -39,7 +39,9 @@ public:
   TType VarType() { return mType; }
   std::string Name() { return mName; }
   
-  virtual Result<bool> Set(const Variable& rhs);
+  virtual Result<bool> Set(const TVar& rhs) = 0;
+  virtual Result<bool> Set(const std::string_view& data) = 0;
+
   virtual Result<bool> Add(const TVar& rhs) = 0;
 
   static TVar Create(std::string_view name, TType type, Byte* pDataBlock = nullptr);
