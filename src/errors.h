@@ -47,6 +47,11 @@ namespace std
 }
 
 using TError = std::error_code;
+struct ErrorPair
+{
+  TError mCode;
+  std::string mMessage;
+};
 
 TError make_error_code(TokenError);
 TError make_error_code(VariableError);
@@ -56,14 +61,9 @@ TError make_error_code(ExecutorError);
 template<typename T>
 class Result
 {
-  struct ErrorPair
-  {
-    TError mCode;
-    std::string mMessage;
-  } mErr;
-
   std::optional<T> mResult;
   std::vector<std::string> mWarnings;
+  ErrorPair mErr;
 
 public:
   Result() = default;
@@ -88,8 +88,8 @@ public:
   void SetResult(T data) { mResult = data; }
   void ClearResult() { mResult.reset(); }
 
-  TError ErrorCode() { return mErr.mCode; }
-  std::string ErrorMessage() { return mErr.mMessage; }
+  ErrorPair Error() { return mErr; }
+  void SetError(ErrorPair pair) { mErr = pair; }
   void SetError(TError err, std::string message = "") 
   { 
     mErr.mCode = err; 

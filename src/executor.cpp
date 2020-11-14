@@ -169,6 +169,8 @@ Result<TVar> Executor::HandleAddition(std::vector<ASTNode>& children, bool bTopL
     deducedType = mRegistry.FindType("int");
   }
 
+  TVar temp = nullptr;
+
   if (LHSVar)
   {
     //temp->Add(*(*LHSVar));
@@ -213,7 +215,7 @@ TError Executor::ProcessTree(ASTNode& tree)
       }
 
       TTokenPair& op = tree.mTokens[0];
-      return HandleOperator(op, tree.mChildren, true).ErrorCode();
+      return HandleOperator(op, tree.mChildren, true).Error().mCode;
     }
     break;
     case ASTNodeType::Function:
