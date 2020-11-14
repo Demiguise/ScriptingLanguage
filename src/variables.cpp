@@ -116,12 +116,12 @@ Result<bool> Variable_Impl<BaseType, BaseType::Int>::Set(const std::string_view&
   Result<bool> result;
   std::string arg(data);
 
-  if (arg.find(".") == std::string::npos)
+  if (arg.find(".") != std::string::npos)
   {
     result.AddWarning(Util::Format("(%s) contains an '.' and may lose data when converted", arg.c_str()));
   }
 
-  if (arg.find(",") == std::string::npos)
+  if (arg.find(",") != std::string::npos)
   {
     result.AddWarning(Util::Format("(%s) contains an ',' and may lose data when converted", arg.c_str()));
   }
@@ -299,22 +299,31 @@ Result<bool> Variable_Impl<BaseType, BaseType::Float>::Set(const TVar& rhs)
 template<>
 Result<bool> Variable_Impl<BaseType, BaseType::Float>::Set(const std::string_view& data)
 {
+  Result<bool> result;
   std::string arg(data);
+
+  if (arg.find(",") != std::string::npos)
+  {
+    result.AddWarning(Util::Format("(%s) contains an ',' and may lose data when converted", arg.c_str()));
+  }
+
   try
   {
     *(float*)mData = std::stof(arg);
-    return true;
+    result.SetResult(true);
   }
   catch (const std::invalid_argument &e)
   {
     std::string errMessage = Util::Format("Cannot use (%s) as type [%s][Invalid_Argument]", arg.c_str(), BaseTypeToString(mType->Base()).c_str());
-    return { VariableError::CannotConvert, errMessage };
+    result.SetError({ VariableError::CannotConvert, errMessage });
   }
   catch (const std::out_of_range &e)
   {
     std::string errMessage = Util::Format("Cannot use (%s) as type [%s][Out_Of_Range]", arg.c_str(), BaseTypeToString(mType->Base()).c_str());
-    return { VariableError::CannotConvert, errMessage };
+    result.SetError({ VariableError::CannotConvert, errMessage });
   }
+
+  return result;
 }
 
 template<>
@@ -421,6 +430,55 @@ TEST_CASE("Variable::Int::Set", "[Variables]")
 
   //Verify we can't set int to invalid values
   testResult = lhs->Set("-9999999999");
+  REQUIRE(!testResult);
+  REQUIRE(testResult.Error().mMessage != "");
+
+  testResult = lhs->Set("muffins");
+  REQUIRE(!testResult);
+  REQUIRE(testResult.Error().mMessage != "");
+}
+
+TEST_CASE("Variable::Float::Set", "[Variables]")
+{
+  TypeRegistry registry;
+  TType type = registry.FindType("float");
+
+  std::string varName = "test-float";
+  std::vector<Byte> fakeStack;
+  fakeStack.resize(type->SizeOf());
+  float* pData = (float*)fakeStack.data();
+
+  TVar lhs = Variable::Create(varName, type, fakeStack.data());
+
+  //Basic check to make sure variable names, types,
+  //and default initialisation are as expected.
+  REQUIRE(lhs->Name() == varName);
+  REQUIRE(lhs->VarType()->Base() == BaseType::Float);
+  REQUIRE(*pData == 0.f);
+
+  //Verify float are set as expected based on string arguments
+  Result<bool> testResult;
+
+  testResult = lhs->Set("1.5f");
+  REQUIRE(testResult);
+  REQUIRE(*pData == 1.5f);
+
+  testResult = lhs->Set("3.402823466e+38F");
+  REQUIRE(testResult);
+  REQUIRE(*pData == 3.402823466e+38F);
+
+  testResult = lhs->Set("1.175494351e-38F");
+  REQUIRE(testResult);
+  REQUIRE(*pData == 1.175494351e-38F);
+
+  //Verify some values can be converted, but generate a warning
+  testResult = lhs->Set("1,234,567");
+  REQUIRE(testResult);
+  REQUIRE(testResult.Warnings().size() != 0);
+  REQUIRE(*pData == 1.f);
+
+  //Verify we can't set int to invalid values
+  testResult = lhs->Set("3.402823466e+99F");
   REQUIRE(!testResult);
   REQUIRE(testResult.Error().mMessage != "");
 
