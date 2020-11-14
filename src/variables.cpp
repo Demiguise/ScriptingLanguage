@@ -86,6 +86,49 @@ namespace Convert
     return (std::string*)pFrom;
   }
 }
+/////////////// INT
+template<>
+Result<bool> Variable_Impl<BaseType, BaseType::Int>::Set(const TVar& rhs)
+{
+  BaseType type = rhs->mType->Base();
+  switch (type)
+  {
+    case BaseType::Int:
+    {
+      int* lhsData = Convert::ToInt(this->mData);
+      int* rhsData = Convert::ToInt(rhs->mData);
+
+      *lhsData = *rhsData;
+      return true;
+    }
+    default: 
+    {
+      std::string errMessage = Util::Format("Cannot convert [%s] to type [%s]", BaseTypeToString(type).c_str(), BaseTypeToString(mType->Base()).c_str());
+      return { VariableError::CannotConvert, errMessage };
+    }
+  }
+}
+
+template<>
+Result<bool> Variable_Impl<BaseType, BaseType::Int>::Set(const std::string_view& data)
+{
+  std::string arg(data);
+  try
+  {
+    *(int *)mData = std::stoi(arg);
+    return true;
+  }
+  catch (const std::invalid_argument &e)
+  {
+    std::string errMessage = Util::Format("Cannot use (%s) as type [%s][Invalid_Argument]", arg.c_str(), BaseTypeToString(mType->Base()).c_str());
+    return { VariableError::CannotConvert, errMessage };
+  }
+  catch (const std::out_of_range &e)
+  {
+    std::string errMessage = Util::Format("Cannot use (%s) as type [%s][Out_Of_Range]", arg.c_str(), BaseTypeToString(mType->Base()).c_str());
+    return { VariableError::CannotConvert, errMessage };
+  }
+}
 
 template<>
 Result<bool> Variable_Impl<BaseType, BaseType::Int>::Add(const TVar& rhs)
