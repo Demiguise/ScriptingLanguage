@@ -86,7 +86,8 @@ namespace Convert
     return (std::string*)pFrom;
   }
 }
-/////////////// INT
+
+/////////////// Int
 template<>
 Result<bool> Variable_Impl<BaseType, BaseType::Int>::Set(const TVar& rhs)
 {
@@ -95,8 +96,8 @@ Result<bool> Variable_Impl<BaseType, BaseType::Int>::Set(const TVar& rhs)
   {
     case BaseType::Int:
     {
-      int* lhsData = Convert::ToInt(this->mData);
-      int* rhsData = Convert::ToInt(rhs->mData);
+      auto* lhsData = Convert::ToInt(this->mData);
+      auto* rhsData = Convert::ToInt(rhs->mData);
 
       *lhsData = *rhsData;
       return true;
@@ -138,8 +139,180 @@ Result<bool> Variable_Impl<BaseType, BaseType::Int>::Add(const TVar& rhs)
   {
     case BaseType::Int:
     {
-      int* lhsData = Convert::ToInt(this->mData);
-      int* rhsData = Convert::ToInt(rhs->mData);
+      auto* lhsData = Convert::ToInt(this->mData);
+      auto* rhsData = Convert::ToInt(rhs->mData);
+
+      *lhsData += *rhsData;
+      return true;
+    }
+    default: 
+    {
+      std::string errMessage = Util::Format("Cannot convert [%s] to type [%s]", BaseTypeToString(type).c_str(), BaseTypeToString(mType->Base()).c_str());
+
+      return { VariableError::CannotConvert, errMessage };
+    }
+  }
+}
+
+/////////////// Bool
+template<>
+Result<bool> Variable_Impl<BaseType, BaseType::Bool>::Set(const TVar& rhs)
+{
+  BaseType type = rhs->mType->Base();
+  switch (type)
+  {
+    case BaseType::Bool:
+    {
+      auto* lhsData = Convert::ToBool(this->mData);
+      auto* rhsData = Convert::ToBool(rhs->mData);
+
+      *lhsData = *rhsData;
+      return true;
+    }
+    default: 
+    {
+      std::string errMessage = Util::Format("Cannot convert [%s] to type [%s]", BaseTypeToString(type).c_str(), BaseTypeToString(mType->Base()).c_str());
+      return { VariableError::CannotConvert, errMessage };
+    }
+  }
+}
+
+template<>
+Result<bool> Variable_Impl<BaseType, BaseType::Bool>::Set(const std::string_view& data)
+{
+  std::string arg(data);
+  if (arg == "true")
+  {
+    *(bool *)mData = true;
+    return true;
+  }
+  else if (arg == "false")
+  {
+    *(bool *)mData = false;
+    return true;
+  }
+  else
+  {
+    std::string errMessage = Util::Format("Cannot use (%s) as type [%s][Invalid_Argument]", arg.c_str(), BaseTypeToString(mType->Base()).c_str());
+    return { VariableError::CannotConvert, errMessage };
+  }
+}
+
+template<>
+Result<bool> Variable_Impl<BaseType, BaseType::Bool>::Add(const TVar& rhs)
+{
+  std::string errMessage = Util::Format("Cannot add to type [%s]", BaseTypeToString(mType->Base()).c_str());
+  return { VariableError::CannotConvert, errMessage };
+}
+
+/////////////// String
+template<>
+Result<bool> Variable_Impl<BaseType, BaseType::String>::Set(const TVar& rhs)
+{
+  BaseType type = rhs->mType->Base();
+  switch (type)
+  {
+    case BaseType::String:
+    {
+      auto* lhsData = Convert::ToString(this->mData);
+      auto* rhsData = Convert::ToString(rhs->mData);
+
+      *lhsData = *rhsData;
+      return true;
+    }
+    default: 
+    {
+      std::string errMessage = Util::Format("Cannot convert [%s] to type [%s]", BaseTypeToString(type).c_str(), BaseTypeToString(mType->Base()).c_str());
+      return { VariableError::CannotConvert, errMessage };
+    }
+  }
+}
+
+template<>
+Result<bool> Variable_Impl<BaseType, BaseType::String>::Set(const std::string_view& data)
+{
+  std::string arg(data);
+  *(std::string*)mData = std::move(arg);
+  return true;
+}
+
+template<>
+Result<bool> Variable_Impl<BaseType, BaseType::String>::Add(const TVar& rhs)
+{
+  BaseType type = rhs->mType->Base();
+  switch (type)
+  {
+    case BaseType::String:
+    {
+      auto* lhsData = Convert::ToString(this->mData);
+      auto* rhsData = Convert::ToString(rhs->mData);
+
+      *lhsData += *rhsData;
+      return true;
+    }
+    default: 
+    {
+      std::string errMessage = Util::Format("Cannot convert [%s] to type [%s]", BaseTypeToString(type).c_str(), BaseTypeToString(mType->Base()).c_str());
+
+      return { VariableError::CannotConvert, errMessage };
+    }
+  }
+}
+
+/////////////// Float
+template<>
+Result<bool> Variable_Impl<BaseType, BaseType::Float>::Set(const TVar& rhs)
+{
+  BaseType type = rhs->mType->Base();
+  switch (type)
+  {
+    case BaseType::Float:
+    {
+      auto* lhsData = Convert::ToFloat(this->mData);
+      auto* rhsData = Convert::ToFloat(rhs->mData);
+
+      *lhsData = *rhsData;
+      return true;
+    }
+    default: 
+    {
+      std::string errMessage = Util::Format("Cannot convert [%s] to type [%s]", BaseTypeToString(type).c_str(), BaseTypeToString(mType->Base()).c_str());
+      return { VariableError::CannotConvert, errMessage };
+    }
+  }
+}
+
+template<>
+Result<bool> Variable_Impl<BaseType, BaseType::Float>::Set(const std::string_view& data)
+{
+  std::string arg(data);
+  try
+  {
+    *(float*)mData = std::stof(arg);
+    return true;
+  }
+  catch (const std::invalid_argument &e)
+  {
+    std::string errMessage = Util::Format("Cannot use (%s) as type [%s][Invalid_Argument]", arg.c_str(), BaseTypeToString(mType->Base()).c_str());
+    return { VariableError::CannotConvert, errMessage };
+  }
+  catch (const std::out_of_range &e)
+  {
+    std::string errMessage = Util::Format("Cannot use (%s) as type [%s][Out_Of_Range]", arg.c_str(), BaseTypeToString(mType->Base()).c_str());
+    return { VariableError::CannotConvert, errMessage };
+  }
+}
+
+template<>
+Result<bool> Variable_Impl<BaseType, BaseType::Float>::Add(const TVar& rhs)
+{
+  BaseType type = rhs->mType->Base();
+  switch (type)
+  {
+    case BaseType::Float:
+    {
+      auto* lhsData = Convert::ToFloat(this->mData);
+      auto* rhsData = Convert::ToFloat(rhs->mData);
 
       *lhsData += *rhsData;
       return true;
