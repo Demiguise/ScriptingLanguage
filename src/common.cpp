@@ -13,5 +13,6 @@ std::string Util::Format(const char* frmt, ...)
 
     std::string result;
     result.assign(buffer, bytesWritten);
+    result += "\n";
     return result;
 }
