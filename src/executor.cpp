@@ -123,14 +123,17 @@ Result<TVar> Executor::HandleEquals(std::vector<ASTNode>& children, bool bTopLev
         }
 
         //TODO: Evaluate whether to have different functiosn for add/subtract/etc.
-        TVar var = *temp;
-        stackVar->Set(*var);
+        auto setResult = stackVar->Set(*temp);
+        if (!setResult)
+        {
+          return setResult.Error();
+        }
       }
       break;
     default:
       {
         TTokenPair& value = RHS.mTokens.front();
-        //stackVar->Set(value.second.mRaw);
+        stackVar->Set(value.second.mRaw);
       }
       break;
   }
@@ -146,21 +149,21 @@ Result<TVar> Executor::HandleAddition(std::vector<ASTNode>& children, bool bTopL
   */
   ASTNode& LHS = children[0];
   TTokenPair& LHSIdent = LHS.mTokens.back();
-  auto LHSVar = mStack.Get(LHSIdent.second.mRaw);
+  auto LHSResult = mStack.Get(LHSIdent.second.mRaw);
 
   ASTNode& RHS = children[1];
   TTokenPair& RHSIdent = RHS.mTokens.back();
-  auto RHSVar = mStack.Get(RHSIdent.second.mRaw);
+  auto RHSResult = mStack.Get(RHSIdent.second.mRaw);
 
   TType deducedType;
   //Attempt to deduce the type used here
-  if (LHSVar)
+  if (LHSResult)
   {
-    deducedType = (*LHSVar)->VarType();
+    deducedType = (*LHSResult)->VarType();
   }
-  else if (RHSVar)
+  else if (RHSResult)
   {
-    deducedType = (*RHSVar)->VarType();
+    deducedType = (*RHSResult)->VarType();
   }
 
   //TODO: Better type deduction
@@ -169,25 +172,31 @@ Result<TVar> Executor::HandleAddition(std::vector<ASTNode>& children, bool bTopL
     deducedType = mRegistry.FindType("int");
   }
 
-  TVar temp = nullptr;
+  TVar temp = Variable::Create("Addition-Temp", deducedType);
 
-  if (LHSVar)
+  TVar LHSVar;
+  if (!LHSResult)
   {
-    //temp->Add(*(*LHSVar));
+    LHSVar = Variable::Create("Addition-LHS", deducedType);
+    LHSVar->Set(LHSIdent.second.mRaw);
   }
   else
   {
-    //temp->Add(LHSIdent.second.mRaw);
+    LHSVar = *LHSResult;
   }
+  temp->Add(LHSVar);
 
-  if (RHSVar)
+  TVar RHSVar;
+  if (!RHSResult)
   {
-    //temp->Add(*(*RHSVar));
+    RHSVar = Variable::Create("Addition-RHS", deducedType);
+    RHSVar->Set(RHSIdent.second.mRaw);
   }
   else
   {
-    //temp->Add(RHSIdent.second.mRaw);
+    RHSVar = *RHSResult;
   }
+  temp->Add(RHSVar);
 
   return temp;
 }
