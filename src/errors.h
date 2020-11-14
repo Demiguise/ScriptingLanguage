@@ -72,6 +72,8 @@ public:
   Result(TError err, std::string message = "")
     : mErr({err, message}) {}
 
+    Result(ErrorPair pair)
+      : mErr(pair) {}
   /*
     We SHOULD be able to implicitly convert from StackError to std::error
     but I can't figured out why/how it's not working atm.
