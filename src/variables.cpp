@@ -477,12 +477,89 @@ TEST_CASE("Variable::Float::Set", "[Variables]")
   REQUIRE(testResult.Warnings().size() != 0);
   REQUIRE(*pData == 1.f);
 
-  //Verify we can't set int to invalid values
+  //Verify we can't set floats to invalid values
   testResult = lhs->Set("3.402823466e+99F");
   REQUIRE(!testResult);
   REQUIRE(testResult.Error().mMessage != "");
 
   testResult = lhs->Set("muffins");
+  REQUIRE(!testResult);
+  REQUIRE(testResult.Error().mMessage != "");
+}
+
+TEST_CASE("Variable::String::Set", "[Variables]")
+{
+  TypeRegistry registry;
+  TType type = registry.FindType("string");
+
+  std::string varName = "test-string";
+  std::vector<Byte> fakeStack;
+  fakeStack.resize(type->SizeOf());
+  std::string* pData = (std::string*)fakeStack.data();
+
+  TVar lhs = Variable::Create(varName, type, fakeStack.data());
+
+  //Basic check to make sure variable names, types,
+  //and default initialisation are as expected.
+  REQUIRE(lhs->Name() == varName);
+  REQUIRE(lhs->VarType()->Base() == BaseType::String);
+  REQUIRE(*pData == "");
+
+  //Verify strings are set as expected based on string arguments
+  Result<bool> testResult;
+
+  testResult = lhs->Set("Hello World");
+  REQUIRE(testResult);
+  REQUIRE(*pData == "Hello World");
+
+  testResult = lhs->Set("");
+  REQUIRE(testResult);
+  REQUIRE(*pData == "");
+}
+
+TEST_CASE("Variable::Bool::Set", "[Variables]")
+{
+  TypeRegistry registry;
+  TType type = registry.FindType("bool");
+
+  std::string varName = "test-bool";
+  std::vector<Byte> fakeStack;
+  fakeStack.resize(type->SizeOf());
+  bool* pData = (bool*)fakeStack.data();
+
+  TVar lhs = Variable::Create(varName, type, fakeStack.data());
+
+  //Basic check to make sure variable names, types,
+  //and default initialisation are as expected.
+  REQUIRE(lhs->Name() == varName);
+  REQUIRE(lhs->VarType()->Base() == BaseType::Bool);
+  REQUIRE(*pData == false);
+
+  //Verify bools are set as expected based on string arguments
+  Result<bool> testResult;
+
+  testResult = lhs->Set("true");
+  REQUIRE(testResult);
+  REQUIRE(*pData == true);
+
+  testResult = lhs->Set("false");
+  REQUIRE(testResult);
+  REQUIRE(*pData == false);
+
+  //Verify we can't set bools to invalid values
+  testResult = lhs->Set("boop");
+  REQUIRE(!testResult);
+  REQUIRE(testResult.Error().mMessage != "");
+
+  testResult = lhs->Set("1");
+  REQUIRE(!testResult);
+  REQUIRE(testResult.Error().mMessage != "");
+
+  testResult = lhs->Set("-999999");
+  REQUIRE(!testResult);
+  REQUIRE(testResult.Error().mMessage != "");
+
+  testResult = lhs->Set("");
   REQUIRE(!testResult);
   REQUIRE(testResult.Error().mMessage != "");
 }
