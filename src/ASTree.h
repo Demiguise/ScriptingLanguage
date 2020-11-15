@@ -2,6 +2,7 @@
 #define __ASTREE_H__
 
 #include "tokeniser.h"
+#include "types.h"
 #include <vector>
 
 enum class ASTNodeType
@@ -20,7 +21,7 @@ struct ASTNode
   TNodes mChildren;
   TTokens mTokens;
 
-  static void BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, ASTNode& parent);
+  static void BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, ASTNode& parent, TypeRegistry& registry);
 };
 
 #endif //~__ASTREE_H__

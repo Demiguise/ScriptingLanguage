@@ -65,7 +65,7 @@ Result<bool> Executor::HandleTokens(TTokenGroup tokens)
     return ExecutorError::Success;
   }
 
-  ASTNode::BuildTree(tokens.begin(), --(tokens.end()), tree);
+  ASTNode::BuildTree(tokens.begin(), --(tokens.end()), tree, mRegistry);
 
   return ProcessTree(tree);
 }

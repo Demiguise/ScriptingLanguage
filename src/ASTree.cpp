@@ -35,7 +35,7 @@ bool IsABuiltin(std::string_view arg)
   return false;
 }
 
-void ASTNode::BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, ASTNode& parent)
+void ASTNode::BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, ASTNode& parent, TypeRegistry& registry)
 {
   if (begin == end)
   {
@@ -45,6 +45,7 @@ void ASTNode::BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, 
 
   auto iter = std::find_if(begin, end, [&](TTokenPair& element)
   {
+    TType type;
     if (IsAnOperator(element.first))
     {
       parent.mType = ASTNodeType::Operator;
@@ -71,14 +72,14 @@ void ASTNode::BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, 
 
   ASTNode lhs;
   lhs.mTokens.assign(begin, iter);
-  BuildTree(begin, iter, lhs);
+  BuildTree(begin, iter, lhs, registry);
   parent.mChildren.push_back(lhs);
 
   ++iter;
 
   ASTNode rhs;
   rhs.mTokens.assign(iter, end);
-  BuildTree(iter, end, rhs);
+  BuildTree(iter, end, rhs, registry);
   parent.mChildren.push_back(rhs);
 }
 
