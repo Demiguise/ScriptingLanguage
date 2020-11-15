@@ -100,3 +100,12 @@ void ASTNode::BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, 
   BuildTree(iter, end, rhs);
   parent.mChildren.push_back(rhs);
 }
+
+#ifdef USE_UNIT_TESTS
+#include <catch2/catch.hpp>
+
+TEST_CASE("ASTree::Basic", "[ASTree]")
+{
+
+}
+#endif
