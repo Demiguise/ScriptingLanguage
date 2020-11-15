@@ -45,10 +45,16 @@
   Operator  -> Failure
 */
 
-Executor::Executor(std::string scriptPath)
-  : mTokeniser(scriptPath)
+Executor::Executor()
+  : mTokeniser()
   , mStack(1024 * 16) //16Kib
 {}
+
+Result<bool> Executor::SetScript(std::string scriptPath)
+{
+  mTokeniser.SetStream("");
+  return false;
+}
 
 TError Executor::HandleTokens(TTokenGroup tokens)
 {

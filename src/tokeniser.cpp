@@ -66,9 +66,14 @@ bool IsAnOperator(Token type)
   }
 }
 
-Tokeniser::Tokeniser(std::string filePath)
-  : mStream(filePath)
+Tokeniser::Tokeniser()
+  : mStream()
+{}
+
+Result<bool> Tokeniser::SetStream(std::string inString)
 {
+  mStream = std::stringstream(inString);
+  return true;
 }
 
 Result<TTokenGroup> Tokeniser::Parse_Internal(std::string& outStatement)
@@ -368,3 +373,14 @@ Result<TTokenGroup> Tokeniser::Parse(std::string& outStatement)
   //Ensure warnings can propagate upwards
   return result;
 }
+
+#ifdef USE_UNIT_TESTS
+#include <catch2/catch.hpp>
+TEST_CASE("Tokeniser::Basic" , "[Tokens]")
+{
+  Tokeniser tokeniser;
+
+  std::string outStatement;
+  Result<TTokenGroup> result = tokeniser.Parse(outStatement);
+}
+#endif

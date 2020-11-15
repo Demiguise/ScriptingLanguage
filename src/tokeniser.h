@@ -1,8 +1,7 @@
 #ifndef __TOKENISER_H__
 #define __TOKENISER_H__
 
-#include <istream>
-#include <fstream>
+#include <sstream>
 #include <string>
 #include <string_view>
 #include <list>
@@ -57,14 +56,15 @@ using TTokenGroup = std::list<TTokenPair>;
 class Tokeniser
 {
 private:
-  std::ifstream mStream;
+  std::stringstream mStream;
   int mCurLine = 1;
 
   Result<TTokenGroup> Parse_Internal(std::string& outStatement);
 
 public:
-  Tokeniser(std::string filePath);
+  Tokeniser();
 
+  Result<bool> SetStream(std::string inString);
   Result<TTokenGroup> Parse(std::string& outStatement);
 };
 

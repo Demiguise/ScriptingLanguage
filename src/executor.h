@@ -26,8 +26,9 @@ private:
   TError ProcessTree(ASTNode& tree);
 
 public:
-  Executor(std::string scriptPath);
-  
+  Executor();
+
+  Result<bool> SetScript(std::string scriptPath);
   TError Execute();
 };
 
