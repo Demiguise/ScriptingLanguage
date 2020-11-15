@@ -22,14 +22,14 @@ private:
 
   Result<TVar> HandleOperator(TTokenPair op, std::vector<ASTNode>& children, bool bTopLevel);
 
-  TError HandleTokens(TTokenGroup tokens);
-  TError ProcessTree(ASTNode& tree);
+  Result<bool> HandleTokens(TTokenGroup tokens);
+  Result<bool> ProcessTree(ASTNode& tree);
 
 public:
   Executor();
 
   Result<bool> SetScript(std::string scriptPath);
-  TError Execute();
+  Result<bool> Execute();
 };
 
 #endif //~__EXECUTOR_H__

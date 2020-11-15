@@ -56,7 +56,7 @@ Result<bool> Executor::SetScript(std::string scriptPath)
   return false;
 }
 
-TError Executor::HandleTokens(TTokenGroup tokens)
+Result<bool> Executor::HandleTokens(TTokenGroup tokens)
 {
   ASTNode tree;
 
@@ -225,7 +225,7 @@ Result<TVar> Executor::HandleOperator(TTokenPair op, std::vector<ASTNode>& child
     }
 }
 
-TError Executor::ProcessTree(ASTNode& tree)
+Result<bool> Executor::ProcessTree(ASTNode& tree)
 {
   switch (tree.mType)
   {
@@ -252,7 +252,7 @@ TError Executor::ProcessTree(ASTNode& tree)
   return ExecutorError::Success;
 }
 
-TError Executor::Execute()
+Result<bool> Executor::Execute()
 {
   std::string raw_statement = "";
   TTokenGroup tokens;
@@ -283,17 +283,16 @@ TError Executor::Execute()
       continue;
     }
 
-    TError err = HandleTokens(tokens);
-
-    if (err)
+    Result<bool> tokenResult = HandleTokens(tokens);
+    if (!tokenResult)
     {
-      return err;
+      return tokenResult;
     }
   }
 
   if (!result)
   {
-    return result.Error().mCode;
+    return result.Error();
   }
 
   return ExecutorError::Success;
