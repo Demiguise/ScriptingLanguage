@@ -83,3 +83,52 @@ TType TypeRegistry::FindType(std::string_view name)
 
   return iter->second;
 }
+
+
+#ifdef USE_UNIT_TESTS
+#include <catch2/catch.hpp>
+TEST_CASE("Type::FindType", "[Types]")
+{
+  TypeRegistry registry;
+  
+  REQUIRE(registry.FindType("int") != Type::Void);
+  REQUIRE(registry.FindType("bool") != Type::Void);
+  REQUIRE(registry.FindType("string") != Type::Void);
+  REQUIRE(registry.FindType("float") != Type::Void);
+}
+
+TEST_CASE("Type::RegisterTypedef", "[Types]")
+{
+  TypeRegistry registry;
+  
+  REQUIRE(registry.FindType("boop") == Type::Void);
+
+  registry.RegisterTypedef(BaseType::Int, "boop");
+
+  TType boopType = registry.FindType("boop");
+  REQUIRE(boopType != Type::Void);
+  REQUIRE(boopType->Base() == BaseType::Int);
+}
+
+TEST_CASE("Type::Sizeof", "[Types]")
+{
+  TypeRegistry registry;
+
+  TType type;
+
+  type = registry.FindType("int");
+  REQUIRE(type->SizeOf() == sizeof(int));
+
+  type = registry.FindType("bool");
+  REQUIRE(type->SizeOf() == sizeof(bool));
+
+  type = registry.FindType("string");
+  REQUIRE(type->SizeOf() == sizeof(std::string));
+
+  type = registry.FindType("float");
+  REQUIRE(type->SizeOf() == sizeof(float));
+
+  type = registry.FindType("boop");
+  REQUIRE(type->SizeOf() == UINT32_MAX);
+}
+#endif
