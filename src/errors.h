@@ -108,7 +108,7 @@ public:
   void AddWarning(std::string warning) { mWarnings.push_back(warning); }
 
   operator bool() const { return mResult.has_value(); }
-  T operator*() { return *mResult; }
+  T& operator*() { return *mResult; }
 };
 
 #endif //~__ERRORS_H__

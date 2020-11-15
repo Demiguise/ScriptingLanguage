@@ -363,8 +363,10 @@ Result<TTokenGroup> Tokeniser::Parse(std::string& outStatement)
     return result;
   }
 
+  auto& tokens = *result;
+
   //Map token raw views to the statement.
-  for (auto& [type, token] : *result)
+  for (auto& [type, token] : tokens)
   {
     int tokenLen = token.mStr.end - token.mStr.begin;
     token.mRaw = std::string_view(outStatement.c_str() + token.mStr.begin, tokenLen);
