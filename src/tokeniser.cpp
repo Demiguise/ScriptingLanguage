@@ -71,7 +71,7 @@ Tokeniser::Tokeniser(std::string filePath)
 {
 }
 
-std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenGroup& outTokens)
+Result<TTokenGroup> Tokeniser::Parse_Internal(std::string& outStatement)
 {
   char ch;
   int line = mCurLine;
@@ -80,13 +80,15 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenGr
 
   IndexPair strIdx;
 
+  Result<TTokenGroup> result;
+  TTokenGroup outTokens;
+
   //Ensure the statement we're about to write is cleared
   outStatement.clear();
-  outTokens.clear();
 
   if (mStream.eof())
   {
-    return -1;
+    return {TokenError::StreamEmpty, "Stream returned EoF before parsing started."};
   }
 
   auto addToken = [&](Token type)
@@ -148,8 +150,6 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenGr
     else if (mStream.peek() == '/')
     {
       //This is a comment
-      std::cout << "Encountered a comment, skipping to newline" << std::endl;
-
       do
       {
         outStatement += ch;
@@ -218,7 +218,6 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenGr
     else
     {
       //Ignore it
-      std::cout << "Skipping whitespace" << std::endl;
       outStatement += ch;
       strIdx.begin++;
       strIdx.end++;
@@ -336,32 +335,36 @@ std::optional<int> Tokeniser::Parse_Internal(std::string& outStatement, TTokenGr
     {
       //We're completely done but there's no error here yet. Add a literal as best guess?
       addToken(Token::Literal);
-      return {};
+      break;
     }
 
     if (handlers[ch]() < 0)
     {
-      return -1;
+      std::string errMessage = Util::Format("Handler for (%s) failed", ch);
+      result.SetError({TokenError::HandlerError, errMessage});
+      return result;
     }
   }
 
-  return {};
+  result.SetResult(outTokens);
+  return result;
 }
 
-std::optional<int> Tokeniser::Parse(std::string& outStatement, TTokenGroup& outTokens)
+Result<TTokenGroup> Tokeniser::Parse(std::string& outStatement)
 {
-  auto err = Parse_Internal(outStatement, outTokens);
-  if (err.has_value())
+  auto result = Parse_Internal(outStatement);
+  if (!result)
   {
-    return err;
+    return result;
   }
 
   //Map token raw views to the statement.
-  for (auto& [type, token] : outTokens)
+  for (auto& [type, token] : *result)
   {
     int tokenLen = token.mStr.end - token.mStr.begin;
     token.mRaw = std::string_view(outStatement.c_str() + token.mStr.begin, tokenLen);
   }
 
-  return {};
+  //Ensure warnings can propagate upwards
+  return result;
 }

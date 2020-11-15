@@ -9,6 +9,8 @@
 enum class TokenError 
 {
   Success = 0,
+  StreamEmpty,
+  HandlerError
 };
 
 enum class VariableError
@@ -86,6 +88,9 @@ public:
     : mErr({err, message}) {}
 
   Result(VariableError err, std::string message = "")
+    : mErr({err, message}) {}
+
+  Result(TokenError err, std::string message = "")
     : mErr({err, message}) {}
 
   void SetResult(T data) { mResult = data; }

@@ -253,7 +253,7 @@ TError Executor::Execute()
 
   mStack.EnterFrame(Stack::FrameType::Function);
 
-  while (!mTokeniser.Parse(raw_statement, tokens).has_value())
+  while (auto result = mTokeniser.Parse(raw_statement))
   {
     std::cout << "RAW: " << raw_statement << std::endl;
     std::cout << "[";

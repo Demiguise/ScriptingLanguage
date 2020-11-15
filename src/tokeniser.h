@@ -6,7 +6,7 @@
 #include <string>
 #include <string_view>
 #include <list>
-#include <optional>
+#include "common.h"
 
 enum class Token
 {
@@ -60,12 +60,12 @@ private:
   std::ifstream mStream;
   int mCurLine = 1;
 
-  std::optional<int> Parse_Internal(std::string& outStatement, TTokenGroup& outTokens);
+  Result<TTokenGroup> Parse_Internal(std::string& outStatement);
 
 public:
   Tokeniser(std::string filePath);
 
-  std::optional<int> Parse(std::string& outStatement, TTokenGroup& outTokens);
+  Result<TTokenGroup> Parse(std::string& outStatement);
 };
 
 #endif //__TOKENISER_H__
