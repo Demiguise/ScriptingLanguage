@@ -246,6 +246,10 @@ Result<TTokenGroup> Tokeniser::Parse_Internal(std::string& outStatement)
 
   #define ADD_OPERATOR_HANDLER(char, singleType) \
     handlers[char] = [&]() -> int { \
+      if (state == State::Literal) \
+      { \
+        addToken(Token::Literal); \
+      } \
       strIdx.end++; \
       outStatement += ch; \
       addToken(singleType); \
@@ -256,7 +260,7 @@ Result<TTokenGroup> Tokeniser::Parse_Internal(std::string& outStatement)
   ADD_OPERATOR_HANDLER('=', Token::Equals);
   ADD_OPERATOR_HANDLER('+', Token::Addition);
   ADD_OPERATOR_HANDLER('-', Token::Subtraction);
-  ADD_OPERATOR_HANDLER('+', Token::Addition);
+  ADD_OPERATOR_HANDLER('*', Token::Multiply);
   ADD_OPERATOR_HANDLER('(', Token::Paren_Open);
   ADD_OPERATOR_HANDLER(')', Token::Paren_Close);
   ADD_OPERATOR_HANDLER('{', Token::Curly_Open);
