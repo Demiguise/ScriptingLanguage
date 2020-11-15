@@ -7,10 +7,6 @@
 #include <vector>
 #include <algorithm>
 
-#ifdef USE_UNIT_TESTS
-#include "catch2/catch.hpp"
-#endif
-
 /*
 [
   IsAType(token) : [
@@ -292,6 +288,7 @@ TError Executor::Execute()
 }
 
 #ifdef USE_UNIT_TESTS
+#include "catch2/catch.hpp"
 TEST_CASE("TestME", "[base]")
 {
   REQUIRE(1 == 1);
