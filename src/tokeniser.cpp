@@ -345,7 +345,7 @@ Result<TTokenGroup> Tokeniser::Parse_Internal(std::string& outStatement)
 
     if (handlers[ch]() < 0)
     {
-      std::string errMessage = Util::Format("Handler for (%s) failed", ch);
+      std::string errMessage = Util::Format("Handler for (%c) failed", ch);
       result.SetError({TokenError::HandlerError, errMessage});
       return result;
     }
