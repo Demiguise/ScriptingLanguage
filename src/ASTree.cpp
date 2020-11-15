@@ -10,14 +10,6 @@ bool IsAType(std::string_view arg, Type& outType);
 bool IsAKeyword(std::string_view arg);
 bool IsABuiltin(std::string_view arg);
 
-using TTypeVec = std::vector<Type>;
-TTypeVec sTypes = {
-  { BaseType::Int,    "int" },
-  { BaseType::Bool,   "bool" },
-  { BaseType::String, "string" },
-  { BaseType::Float,  "float" },
-};
-
 bool IsAVariable(std::string_view arg, Variable& outVar)
 {
   return false;
@@ -30,18 +22,7 @@ bool IsAnIdentifier(std::string_view arg)
 
 bool IsAType(std::string_view arg, Type& outType)
 {
-  auto type = std::find_if(sTypes.begin(), sTypes.end(), 
-    [&](Type& element) { return element.Name() == arg; });
-
-  if (type == sTypes.end())
-  {
-    return false;
-  }
-  else
-  {
-    outType = *type;
-    return true;
-  }
+  return false;
 }
 
 bool IsAKeyword(std::string_view arg)
