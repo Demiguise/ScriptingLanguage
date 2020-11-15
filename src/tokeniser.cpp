@@ -381,8 +381,19 @@ Result<TTokenGroup> Tokeniser::Parse(std::string& outStatement)
 TEST_CASE("Tokeniser::Basic" , "[Tokens]")
 {
   Tokeniser tokeniser;
-
   std::string outStatement;
+
+  tokeniser.SetStream("int a = 1;");
   Result<TTokenGroup> result = tokeniser.Parse(outStatement);
+  REQUIRE(result);
+
+  auto& tokens = *result;
+  auto iter = tokens.begin();
+  REQUIRE(tokens.size() == 5);
+  REQUIRE((iter++)->first == Token::Literal);
+  REQUIRE((iter++)->first == Token::Literal);
+  REQUIRE((iter++)->first == Token::Equals);
+  REQUIRE((iter++)->first == Token::Literal);
+  REQUIRE((iter++)->first == Token::Statement_End);
 }
 #endif
