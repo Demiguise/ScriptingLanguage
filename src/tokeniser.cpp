@@ -412,4 +412,56 @@ TEST_CASE("Tokeniser::Basic" , "[Tokens]")
   REQUIRE((iter++)->first == Token::Literal);
   REQUIRE((iter++)->first == Token::Statement_End);
 }
+
+TEST_CASE("Tokeniser::MultiOperators" , "[Tokens]")
+{
+  Tokeniser tokeniser;
+  std::string outStatement;
+  Result<TTokenGroup> result;
+
+  SECTION("2 operators")
+  {
+    tokeniser.SetStream("int a = 1 + 2;");
+    result = tokeniser.Parse(outStatement);
+
+    REQUIRE(result);
+
+    auto& tokens = *result;
+    auto iter = tokens.begin();
+    REQUIRE(tokens.size() == 7);
+    REQUIRE((iter++)->first == Token::Literal); //int
+    REQUIRE((iter++)->first == Token::Literal); //a
+    REQUIRE((iter++)->first == Token::Equals);  //=
+    REQUIRE((iter++)->first == Token::Literal); //1
+    REQUIRE((iter++)->first == Token::Addition);//+
+    REQUIRE((iter++)->first == Token::Literal); //2
+    REQUIRE((iter++)->first == Token::Statement_End);
+  }
+
+  SECTION("5 operators")
+  {
+    tokeniser.SetStream("int a = 1 + 2 - 3 + 4 * 5;");
+    result = tokeniser.Parse(outStatement);
+
+    REQUIRE(result);
+
+    auto& tokens = *result;
+    auto iter = tokens.begin();
+    REQUIRE(tokens.size() == 13);
+    REQUIRE((iter++)->first == Token::Literal); //int
+    REQUIRE((iter++)->first == Token::Literal); //a
+    REQUIRE((iter++)->first == Token::Equals);  //=
+    REQUIRE((iter++)->first == Token::Literal); //1
+    REQUIRE((iter++)->first == Token::Addition);//+
+    REQUIRE((iter++)->first == Token::Literal); //2
+    REQUIRE((iter++)->first == Token::Subtraction);//-
+    REQUIRE((iter++)->first == Token::Literal); //3
+    REQUIRE((iter++)->first == Token::Addition);//+
+    REQUIRE((iter++)->first == Token::Literal); //4
+    REQUIRE((iter++)->first == Token::Multiply);//*
+    REQUIRE((iter++)->first == Token::Literal); //5
+    REQUIRE((iter++)->first == Token::Statement_End);
+  }
+
+}
 #endif
