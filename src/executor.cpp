@@ -253,7 +253,8 @@ TError Executor::Execute()
 
   mStack.EnterFrame(Stack::FrameType::Function);
 
-  while (auto result = mTokeniser.Parse(raw_statement))
+  Result<TTokenGroup> result;
+  while ((result = mTokeniser.Parse(raw_statement)))
   {
     std::cout << "RAW: " << raw_statement << std::endl;
     std::cout << "[";
@@ -282,6 +283,11 @@ TError Executor::Execute()
     {
       return err;
     }
+  }
+
+  if (!result)
+  {
+    return result.Error().mCode;
   }
 
   return ExecutorError::Success;
