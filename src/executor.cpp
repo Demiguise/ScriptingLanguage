@@ -52,8 +52,7 @@ Executor::Executor()
 
 Result<bool> Executor::SetScript(std::string scriptPath)
 {
-  mTokeniser.SetStream("");
-  return false;
+  return mTokeniser.SetStream(scriptPath);
 }
 
 Result<bool> Executor::HandleTokens(TTokenGroup tokens)
@@ -262,6 +261,7 @@ Result<bool> Executor::Execute()
   Result<TTokenGroup> result;
   while ((result = mTokeniser.Parse(raw_statement)))
   {
+    tokens = *result;
     std::cout << "RAW: " << raw_statement << std::endl;
     std::cout << "[";
     bool bFirst = true;
@@ -300,8 +300,19 @@ Result<bool> Executor::Execute()
 
 #ifdef USE_UNIT_TESTS
 #include "catch2/catch.hpp"
-TEST_CASE("TestME", "[base]")
+TEST_CASE("Executor::Basic", "[Executor]")
 {
-  REQUIRE(1 == 1);
+  Executor executor;
+
+  Result<bool> result;
+  result = executor.SetScript("int a = 1 + 2;");
+  REQUIRE(result);
+
+  result = executor.Execute();
+  REQUIRE(result);
+
+  auto& stack = executor.GetStack();
+  auto typeResult = stack.Get("a");
+  REQUIRE(typeResult);
 }
 #endif

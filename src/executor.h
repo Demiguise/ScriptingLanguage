@@ -28,7 +28,10 @@ private:
 public:
   Executor();
 
-  Result<bool> SetScript(std::string scriptPath);
+  const Stack& GetStack() { return mStack; }
+  TypeRegistry& GetRegistry() { return mRegistry; }
+
+  Result<bool> SetScript(std::string scriptString); //Entire buffer in string should be the script
   Result<bool> Execute();
 };
 
