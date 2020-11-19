@@ -49,7 +49,7 @@ public:
   Stack(size_t stackSize);
 
   Result<TVar> Create(TType type, std::string_view name);
-  Result<TVar> Get(std::string_view name);
+  Result<TVar> Get(std::string_view name) const;
 
   void EnterFrame(FrameType type);
   void ExitFrame();

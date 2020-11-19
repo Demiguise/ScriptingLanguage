@@ -73,7 +73,7 @@ Result<TVar> Stack::Create(TType type, std::string_view name)
   return result;
 }
 
-Result<TVar> Stack::Get(std::string_view name)
+Result<TVar> Stack::Get(std::string_view name) const
 {
   if (mFrames.size() == 0)
   {
