@@ -7,6 +7,10 @@
 #include <stdio.h>
 #include <iostream>
 
+#include "logger.h"
+
+DEFINE_LOGGER(EModule::ScriptLang, "Tokeniser", tokeniserLog)
+
 enum class State
 {
   Normal,
@@ -102,9 +106,10 @@ Result<TTokenGroup> Tokeniser::Parse_Internal(std::string& outStatement)
     info.mLine = line;
     info.mStr = strIdx;
 
-    std::cout << "Adding " << TypeToString(type) << " [" << 
-              strIdx.begin << ":" << strIdx.end << "] " << 
-              outStatement.substr(strIdx.begin, strIdx.end - strIdx.begin) << std::endl;
+    LOG_INFO( tokeniserLog, "Adding %s [%d:%d] %s", 
+              TypeToString(type).c_str(), strIdx.begin, strIdx.end,
+              outStatement.substr(strIdx.begin, strIdx.end - strIdx.begin).c_str());
+
     outTokens.push_back({type, info});
 
     strIdx.begin = strIdx.end;

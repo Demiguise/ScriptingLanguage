@@ -22,6 +22,9 @@ set(SRCS
 
   common.cpp
   common.h
+
+  logger.h
+  logger.cpp
 )
 
 set(Common_Defines
