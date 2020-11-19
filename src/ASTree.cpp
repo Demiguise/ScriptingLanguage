@@ -88,6 +88,39 @@ void ASTNode::BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, 
 
 TEST_CASE("ASTree::Basic", "[ASTree]")
 {
+  TypeRegistry registry;
+  ASTNode root;
 
+  TTokenGroup testGroup = {
+    {Token::Literal, TokenInfo()},
+    {Token::Equals, TokenInfo()},
+    {Token::Literal, TokenInfo()},
+  };
+
+  ASTNode::BuildTree(testGroup.begin(), testGroup.end(), root, registry);
+  REQUIRE(root.mChildren.size() == 2);
+  REQUIRE(root.mType == ASTNodeType::Operator);
+}
+
+TEST_CASE("ASTree::MultipleOperators", "[ASTree]")
+{
+  TypeRegistry registry;
+  ASTNode root;
+
+  TTokenGroup testGroup = {
+    {Token::Literal, TokenInfo()},
+    {Token::Equals, TokenInfo()},
+    {Token::Literal, TokenInfo()},
+    {Token::Addition, TokenInfo()},
+    {Token::Literal, TokenInfo()},
+  };
+
+  ASTNode::BuildTree(testGroup.begin(), testGroup.end(), root, registry);
+  REQUIRE(root.mChildren.size() == 2);
+  REQUIRE(root.mType == ASTNodeType::Operator);
+
+  auto& rhs = root.mChildren[1];
+  REQUIRE(rhs.mChildren.size() == 2);
+  REQUIRE(rhs.mType == ASTNodeType::Operator);
 }
 #endif
