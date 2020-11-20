@@ -237,7 +237,13 @@ Result<bool> Executor::ProcessTree(ASTNode& tree)
       }
 
       TTokenPair& op = tree.mTokens[0];
-      return HandleOperator(op, tree.mChildren, true).Error().mCode;
+      auto result = HandleOperator(op, tree.mChildren, true);
+      if (!result)
+      {
+        return result.Error();
+      }
+
+      return true;
     }
     break;
     case ASTNodeType::Function:
@@ -248,7 +254,7 @@ Result<bool> Executor::ProcessTree(ASTNode& tree)
     break;
   }
 
-  return ExecutorError::Success;
+  return false;
 }
 
 Result<bool> Executor::Execute()
@@ -290,12 +296,12 @@ Result<bool> Executor::Execute()
     }
   }
 
-  if (!result)
+  if (!result && result.Error().mCode != TokenError::StreamEmpty)
   {
     return result.Error();
   }
 
-  return ExecutorError::Success;
+  return true;
 }
 
 #ifdef USE_UNIT_TESTS
