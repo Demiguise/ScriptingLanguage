@@ -95,6 +95,9 @@ Result<TTokenGroup> Tokeniser::Parse_Internal(std::string& outStatement)
   //Ensure the statement we're about to write is cleared
   outStatement.clear();
 
+  //We might need to peek at the stream to make sure the eof bit is set.
+  mStream.peek();
+
   if (mStream.eof())
   {
     return {TokenError::StreamEmpty, "Stream returned EoF before parsing started."};
