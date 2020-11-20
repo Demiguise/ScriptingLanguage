@@ -315,4 +315,21 @@ TEST_CASE("Executor::Basic", "[Executor]")
   auto typeResult = stack.Get("a");
   REQUIRE(typeResult);
 }
+
+TEST_CASE("Executor::Typedefs", "[Executor]")
+{
+  Executor executor;
+  
+  Result<bool> result;
+  result = executor.SetScript("using bob = int;");
+  REQUIRE(result);
+
+  result = executor.Execute();
+  REQUIRE(result);
+
+  auto& types = executor.GetRegistry();
+  auto testType = types.FindType("bob");
+  REQUIRE(testType);
+  REQUIRE(testType->Base() == BaseType::Int);
+}
 #endif
