@@ -91,11 +91,14 @@ TEST_CASE("ASTree::Basic", "[ASTree]")
   TypeRegistry registry;
   ASTNode root;
 
-  TTokenGroup testGroup = {
-    {Token::Literal, TokenInfo()},
-    {Token::Equals, TokenInfo()},
-    {Token::Literal, TokenInfo()},
-  };
+  std::string outStatement;
+
+  Tokeniser tokeniser;
+  tokeniser.SetStream("a = b");
+  auto result = tokeniser.Parse(outStatement);
+  REQUIRE(result);
+
+  TTokenGroup testGroup = *result;
 
   ASTNode::BuildTree(testGroup.begin(), testGroup.end(), root, registry);
   REQUIRE(root.mChildren.size() == 2);
@@ -106,14 +109,14 @@ TEST_CASE("ASTree::MultipleOperators", "[ASTree]")
 {
   TypeRegistry registry;
   ASTNode root;
+  std::string outStatement;
 
-  TTokenGroup testGroup = {
-    {Token::Literal, TokenInfo()},
-    {Token::Equals, TokenInfo()},
-    {Token::Literal, TokenInfo()},
-    {Token::Addition, TokenInfo()},
-    {Token::Literal, TokenInfo()},
-  };
+  Tokeniser tokeniser;
+  tokeniser.SetStream("a = b + c");
+  auto result = tokeniser.Parse(outStatement);
+  REQUIRE(result);
+
+  TTokenGroup testGroup = *result;
 
   ASTNode::BuildTree(testGroup.begin(), testGroup.end(), root, registry);
   REQUIRE(root.mChildren.size() == 2);
