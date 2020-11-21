@@ -126,4 +126,23 @@ TEST_CASE("ASTree::MultipleOperators", "[ASTree]")
   REQUIRE(rhs.mChildren.size() == 2);
   REQUIRE(rhs.mType == ASTNodeType::Operator);
 }
+
+TEST_CASE("ASTree::Keyword::Using", "[ASTree]")
+{
+  TypeRegistry registry;
+  ASTNode root;
+  std::string outStatement;
+
+  Tokeniser tokeniser;
+  tokeniser.SetStream("using bob = int;");
+  auto result = tokeniser.Parse(outStatement);
+  REQUIRE(result);
+
+  TTokenGroup testGroup = *result;
+
+  ASTNode::BuildTree(testGroup.begin(), testGroup.end(), root, registry);
+  REQUIRE(root.mChildren.size() == 0);
+  REQUIRE(root.mType == ASTNodeType::Keyword);
+}
+
 #endif
