@@ -8,6 +8,7 @@
 enum class ASTNodeType
 {
   Operator, //2 children, LHS and RHS.
+  Keyword,  //N Children
   Function, //N children.
   Literal,  //0 Children.
 };

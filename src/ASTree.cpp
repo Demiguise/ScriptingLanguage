@@ -1,5 +1,6 @@
 #include "ASTree.h"
 #include "variables.h"
+#include "keywords.h"
 
 #include <algorithm> 
 #include <string_view>
@@ -21,11 +22,6 @@ bool IsAnIdentifier(std::string_view arg)
 }
 
 bool IsAType(std::string_view arg, Type& outType)
-{
-  return false;
-}
-
-bool IsAKeyword(std::string_view arg)
 {
   return false;
 }
@@ -56,6 +52,11 @@ void ASTNode::BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, 
       parent.mType = ASTNodeType::Function;
       return true;
     }
+    else if (IsKeyword(element.second.mRaw) != Keyword::Null)
+    {
+      parent.mType = ASTNodeType::Keyword;
+      return true;
+    }
     else
     {
       return false;
@@ -64,23 +65,30 @@ void ASTNode::BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, 
 
   if (iter == end)
   {
-    //Nothing in this area is an operator
+    //Nothing in this area is interesting
     return;
   }
-  
-  parent.mTokens.push_back(*iter);
 
-  ASTNode lhs;
-  lhs.mTokens.assign(begin, iter);
-  BuildTree(begin, iter, lhs, registry);
-  parent.mChildren.push_back(lhs);
+  if (parent.mType == ASTNodeType::Keyword)
+  {
+    ++iter;
+  }
+  else
+  {
+    parent.mTokens.push_back(*iter);
 
-  ++iter;
+    ASTNode lhs;
+    lhs.mTokens.assign(begin, iter);
+    BuildTree(begin, iter, lhs, registry);
+    parent.mChildren.push_back(lhs);
 
-  ASTNode rhs;
-  rhs.mTokens.assign(iter, end);
-  BuildTree(iter, end, rhs, registry);
-  parent.mChildren.push_back(rhs);
+    ++iter;
+
+    ASTNode rhs;
+    rhs.mTokens.assign(iter, end);
+    BuildTree(iter, end, rhs, registry);
+    parent.mChildren.push_back(rhs);
+  }
 }
 
 #ifdef USE_UNIT_TESTS
