@@ -25,6 +25,9 @@ set(SRCS
 
   logger.h
   logger.cpp
+
+  keywords.h
+  keywords.cpp
 )
 
 set(Common_Defines
