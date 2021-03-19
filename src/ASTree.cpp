@@ -2,7 +2,7 @@
 #include "variables.h"
 #include "keywords.h"
 
-#include <algorithm> 
+#include <algorithm>
 #include <string_view>
 
 bool IsAVariable(std::string_view arg, Variable& outVar);
@@ -69,25 +69,39 @@ void ASTNode::BuildTree(TTokenGroup::iterator begin, TTokenGroup::iterator end, 
     return;
   }
 
-  if (parent.mType == ASTNodeType::Keyword)
+  switch (parent.mType)
   {
-    ++iter;
-  }
-  else
-  {
-    parent.mTokens.push_back(*iter);
+    case ASTNodeType::Keyword:
+    {
+      //Place the keyword into the parent node
+      parent.mTokens.push_back(*iter);
+      ++iter;
 
-    ASTNode lhs;
-    lhs.mTokens.assign(begin, iter);
-    BuildTree(begin, iter, lhs, registry);
-    parent.mChildren.push_back(lhs);
+      ASTNode keywordChild;
+      BuildTree(iter, end, keywordChild, registry);
+      parent.mChildren.push_back(keywordChild);
+    }
+    break;
+    case ASTNodeType::Operator:
+    {
+      parent.mTokens.push_back(*iter);
 
-    ++iter;
+      ASTNode lhs;
+      lhs.mTokens.assign(begin, iter);
+      BuildTree(begin, iter, lhs, registry);
+      parent.mChildren.push_back(lhs);
 
-    ASTNode rhs;
-    rhs.mTokens.assign(iter, end);
-    BuildTree(iter, end, rhs, registry);
-    parent.mChildren.push_back(rhs);
+      ++iter;
+
+      ASTNode rhs;
+      rhs.mTokens.assign(iter, end);
+      BuildTree(iter, end, rhs, registry);
+      parent.mChildren.push_back(rhs);
+    }
+    break;
+    default:
+      //Error?
+    break;
   }
 }
 
