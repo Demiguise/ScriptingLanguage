@@ -7,6 +7,8 @@
 #include <vector>
 #include <algorithm>
 
+#include "keywords.h"
+
 /*
 [
   IsAType(token) : [
@@ -38,10 +40,10 @@
 
             -> IsAKeyword ->  <Dependant on Keyword>
 
-            -> IsABuiltin ->  Paren_Open -> 
+            -> IsABuiltin ->  Paren_Open ->
                           ->  Failure
             -> Failure
-  
+
   Operator  -> Failure
 */
 
@@ -224,6 +226,51 @@ Result<TVar> Executor::HandleOperator(TTokenPair op, std::vector<ASTNode>& child
     }
 }
 
+Result<bool> Executor::HandleKeyword(TTokenPair op, std::vector<ASTNode>& children, bool bTopLevel)
+{
+  if (op.first != Token::Literal)
+  {
+    //The token containing the keyword should always be a literal
+    return ExecutorError::Temp;
+  }
+
+  Keyword keyword = IsKeyword(op.second.mRaw);
+
+  switch (keyword)
+  {
+    case Keyword::Using:
+    {
+      /*
+        Should be in the format:
+          using <literal> = <type>;
+      */
+      if (children.size() != 1)
+      {
+        //Expected a different number of children
+        return ExecutorError::Temp;
+      }
+
+      ASTNode& operationNode = children[0];
+
+      ASTNode& baseTypeNode = operationNode.mChildren[1];
+      TTokenPair& baseTypePair = baseTypeNode.mTokens.back();
+      auto baseType = mRegistry.FindType(baseTypePair.second.mRaw);
+      if (baseType == Type::Void)
+      {
+        //Couldn't find the type
+        return ExecutorError::Temp;
+      }
+
+      //Found a corresponding type we know about, just make the typedef
+      ASTNode& newNameNode = operationNode.mChildren[0];
+      TTokenPair& newNamePair = newNameNode.mTokens.back();
+      mRegistry.RegisterTypedef(baseType->Base(), newNamePair.second.mRaw);
+    }
+    return true;
+    default: return ExecutorError::Temp;
+  }
+}
+
 Result<bool> Executor::ProcessTree(ASTNode& tree)
 {
   switch (tree.mType)
@@ -246,6 +293,21 @@ Result<bool> Executor::ProcessTree(ASTNode& tree)
       return true;
     }
     break;
+    case ASTNodeType::Keyword:
+    {
+      /*
+        Keywords can have any number of operators, including none.
+        Defer checking of this to the actual keyword handler.
+      */
+      TTokenPair& op = tree.mTokens[0];
+      auto result = HandleKeyword(op, tree.mChildren, true);
+      if (!result)
+      {
+        return result.Error();
+      }
+
+      return true;
+    }
     case ASTNodeType::Function:
     {}
     break;
@@ -325,7 +387,7 @@ TEST_CASE("Executor::Basic", "[Executor]")
 TEST_CASE("Executor::Typedefs", "[Executor]")
 {
   Executor executor;
-  
+
   Result<bool> result;
   result = executor.SetScript("using bob = int;");
   REQUIRE(result);

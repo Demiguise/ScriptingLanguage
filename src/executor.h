@@ -21,6 +21,7 @@ private:
   Result<TVar> HandleAddition(std::vector<ASTNode>& children, bool bTopLevel);
 
   Result<TVar> HandleOperator(TTokenPair op, std::vector<ASTNode>& children, bool bTopLevel);
+  Result<bool> HandleKeyword(TTokenPair op, std::vector<ASTNode>& children, bool bTopLevel);
 
   Result<bool> HandleTokens(TTokenGroup tokens);
   Result<bool> ProcessTree(ASTNode& tree);
