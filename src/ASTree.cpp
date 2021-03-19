@@ -163,7 +163,7 @@ TEST_CASE("ASTree::Keyword::Using", "[ASTree]")
   TTokenGroup testGroup = *result;
 
   ASTNode::BuildTree(testGroup.begin(), testGroup.end(), root, registry);
-  REQUIRE(root.mChildren.size() == 0);
+  REQUIRE(root.mChildren.size() == 1);
   REQUIRE(root.mType == ASTNodeType::Keyword);
 }
 
