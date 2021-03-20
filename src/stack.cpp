@@ -117,3 +117,83 @@ void Stack::ExitFrame()
     std::cout << "Exited stack frame" << std::endl;
   }
 }
+
+#ifdef USE_UNIT_TESTS
+#include "catch2/catch.hpp"
+TEST_CASE("Stack::Basic", "[Stack]")
+{
+  Stack stack(128);
+  TypeRegistry registry;
+  stack.EnterFrame(Stack::FrameType::Function);
+
+  auto result = stack.Create(registry.FindType("int"), "a");
+  REQUIRE(result);
+  REQUIRE(result.Warnings().size() == 0);
+
+  result = stack.Get("a");
+  REQUIRE(result);
+}
+
+TEST_CASE("Stack::Shadows::Warning", "[Stack]")
+{
+  Stack stack(128);
+  TypeRegistry registry;
+  stack.EnterFrame(Stack::FrameType::Function);
+
+  auto result = stack.Create(registry.FindType("int"), "a");
+  REQUIRE(result);
+  REQUIRE(result.Warnings().size() == 0);
+
+  // Make sure there's a warning here for shadows
+  result = stack.Create(registry.FindType("int"), "a");
+  REQUIRE(result);
+  REQUIRE(result.Warnings().size() != 0);
+
+  // Enter an arbitrary scope change
+  stack.EnterFrame(Stack::FrameType::Base);
+
+  // Old variable should still be reachable
+  result = stack.Create(registry.FindType("int"), "a");
+  REQUIRE(result);
+  REQUIRE(result.Warnings().size() != 0);
+
+  result = stack.Get("a");
+  REQUIRE(result);
+}
+
+TEST_CASE("Stack::Shadows::NewStack", "[Stack]")
+{
+  Stack stack(128);
+  TypeRegistry registry;
+  stack.EnterFrame(Stack::FrameType::Function);
+
+  auto result = stack.Create(registry.FindType("int"), "a");
+  REQUIRE(result);
+  REQUIRE(result.Warnings().size() == 0);
+
+  // Enter a new frame
+  stack.EnterFrame(Stack::FrameType::Function);
+
+  // Should be no warning now since it's a completely new stack frame
+  result = stack.Create(registry.FindType("int"), "a");
+  REQUIRE(result);
+  REQUIRE(result.Warnings().size() == 0);
+
+  result = stack.Get("a");
+  REQUIRE(result);
+}
+
+TEST_CASE("Stack::Memory", "[Stack]")
+{
+  Stack stack(4);
+  TypeRegistry registry;
+  stack.EnterFrame(Stack::FrameType::Function);
+
+  auto result = stack.Create(registry.FindType("int"), "a");
+  REQUIRE(result);
+  REQUIRE(result.Warnings().size() == 0);
+
+  result = stack.Create(registry.FindType("int"), "b");
+  REQUIRE(!result);
+}
+#endif
