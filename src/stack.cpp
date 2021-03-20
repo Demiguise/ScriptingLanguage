@@ -14,8 +14,9 @@ Stack::Stack(size_t stackSize)
 //Shadows being other variables named the same thing.
 Stack::ShadowResult Stack::CheckForShadows(std::string_view name)
 {
-  for (auto frame : mFrames)
+  for (auto iter = mFrames.rbegin() ; iter != mFrames.rend() ; iter++)
   {
+    auto frame = *iter;
     auto varIter = std::find_if(frame.mVariables.begin(), frame.mVariables.end(),
                   [&](TVar& ele) { return ele->Name() == name; } );
 
